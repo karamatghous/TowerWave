@@ -11,8 +11,44 @@ import {
 } from "@material-ui/core";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Avatar from "@mui/material/Avatar";
+import axios from "axios";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function LoginForm() {
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [signup, setSignup] = React.useState(false);
+  const [error, setError] = React.useState(false);
+  const navigate = useNavigate()
+  const signInForm = (event) => {
+    setError(false);
+    event.preventDefault();
+    
+      axios.post('http://localhost:8001/api/auth/signin', { password: password, email: email }).then((response) => {
+        if (response.status === 200) {
+          navigate('/dashboard')
+        }
+      }).catch(error => {
+        console.log(error.response);
+        setError(true);
+    });
+  }
+  const signUpForm = (event) => {
+    event.preventDefault();
+    try{
+    axios.post('http://localhost:8001/api/auth/signup', {username: email, password:password, email: email}).then((response) => {
+      if (response.status === 200) {
+        setSignup(!signup)
+      }
+      else {
+        setError(true);
+      }
+    })
+  }
+  catch (err) {
+    console.log(err)
+  }
+  }
   const displayDesktop = () => {
     return (
       <Typography
@@ -25,7 +61,7 @@ function LoginForm() {
       </Typography>
     );
   };
-
+  console.log(error)
   return (
     <div className="App">
       <header align="center">
@@ -55,12 +91,14 @@ function LoginForm() {
             </Container>
 
             <Typography gutterBottom variant="h4">
-              Login
+              {signup ? "Sign Up" : "Login"}
             </Typography>
-            <form>
+            <form onSubmit={signup ? signUpForm :signInForm }>
               <Grid container spacing={1}>
                 <Grid item xs={12}>
                   <TextField
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
                     type="email"
                     placeholder="Enter email"
                     label="Email"
@@ -77,6 +115,8 @@ function LoginForm() {
                     fullWidth
                     required
                     type="password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
                   />
                 </Grid>
 
@@ -87,9 +127,25 @@ function LoginForm() {
                     color="primary"
                     fullWidth
                   >
-                    Submit
+                    {signup ? "Sign Up" : "Login"}
                   </Button>
+                  <br />
+                 
                 </Grid>
+                <Grid item xs={12} style={{ marginTop: 10 }}>
+                {error&&
+                    <span style={{color: "red", marginTop: 10}}>Please check Your Email and Password</span>
+                  }
+                </Grid>
+                
+                  <Grid item xs={12} style={{ marginTop: 30, cursor: 'pointer' }} >
+                  <span onClick={() => {setSignup(!signup)
+                  setError(false)}
+                  }> 
+                    {signup ? `Already have an account ` : `Don't have an account yet? click here to Sign Up`}
+                      </span>
+              </Grid>
+
               </Grid>
             </form>
           </CardContent>
