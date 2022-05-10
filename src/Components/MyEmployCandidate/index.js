@@ -26,7 +26,6 @@ import { uniqBy } from 'lodash'
 import SearchIcon from '@mui/icons-material/Search'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import Loader from '../Loader'
-import { useNavigate } from 'react-router-dom'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -52,7 +51,7 @@ function HomePage() {
     const date = new Date()
     const formatedDate = moment(date).format('MMMM DD, YYYY')
     const client = localStorage.getItem('client')
-    const user = JSON.parse(localStorage.getItem('user'))
+    const [user, setUser] = React.useState({})
     const [jobList, setJobList] = React.useState([])
     const [countJobList, setCountJobList] = React.useState([])
     const now = moment(new Date())
@@ -73,7 +72,7 @@ function HomePage() {
         source: '',
     })
     const [loading, setLoading] = React.useState(false)
-    const navigate = useNavigate()
+    const [users, setUsers] = React.useState([])
 
     const handleOpen = async (row) => {
         setNotesText(row.notes ? row.notes : '')
@@ -100,6 +99,7 @@ function HomePage() {
     })
 
     React.useEffect(() => {
+        getAllUsers()
         const resultCity = uniqBy(City.getCitiesOfCountry('US'), 'name')
         setCityList(resultCity)
         const resultState = uniqBy(State.getStatesOfCountry('US'), 'name')
@@ -115,24 +115,30 @@ function HomePage() {
         )
     }, [jobList])
 
+    React.useEffect(() => {
+        getMyAllJobs()
+    }, [user])
+
     const getMyAllJobs = () => {
-        const data = {
-            clientId: client,
-            userId: user.id,
-        }
-        try {
-            axiosClient
-                .post('user/profile/getUserCandidates', data, httpOptions)
-                .then((response) => {
-                    if (response.status === 200) {
-                        const res = response.data.data
-                        setJobList(res)
-                    } else {
-                        // setError(true)
-                    }
-                })
-        } catch (err) {
-            console.log(err)
+        if (user.id) {
+            const data = {
+                clientId: client,
+                userId: user?.id,
+            }
+            try {
+                axiosClient
+                    .post('user/profile/getUserCandidates', data, httpOptions)
+                    .then((response) => {
+                        if (response.status === 200) {
+                            const res = response.data.data
+                            setJobList(res)
+                        } else {
+                            // setError(true)
+                        }
+                    })
+            } catch (err) {
+                console.log(err)
+            }
         }
     }
 
@@ -140,7 +146,7 @@ function HomePage() {
         const data = {
             clientId: client,
             filter: filter,
-            userId: user.id,
+            userId: user?.id,
         }
         try {
             axiosClient
@@ -162,7 +168,7 @@ function HomePage() {
         const data = {
             clientId: client,
             term: term,
-            userId: user.id,
+            userId: user?.id,
         }
         try {
             axiosClient
@@ -201,6 +207,26 @@ function HomePage() {
         }
     }
 
+    const getAllUsers = () => {
+        const data = {
+            clientId: client,
+        }
+        try {
+            axiosClient
+                .post('auth/getalluser', data, httpOptions)
+                .then((response) => {
+                    if (response.status === 200) {
+                        const res = response.data.data
+                        setUsers(res)
+                    } else {
+                        // setError(true)
+                    }
+                })
+        } catch (err) {
+            console.log(err)
+        }
+    }
+    console.log(users)
     const statusList = [
         { name: 'Applied', value: '0' },
         { name: 'Assigned', value: '1' },
@@ -241,15 +267,7 @@ function HomePage() {
                                     <StyledTableCell component="th" scope="row">
                                         {row.post_job.job_title}
                                     </StyledTableCell>
-                                    <StyledTableCell
-                                        onClick={() => {
-                                            localStorage.setItem(
-                                                'candidate',
-                                                row
-                                            )
-                                            navigate('/recruitment')
-                                        }}
-                                    >
+                                    <StyledTableCell>
                                         {row.first_name}
                                     </StyledTableCell>
                                     <StyledTableCell>
@@ -320,6 +338,42 @@ function HomePage() {
                 marginTop: 50,
             }}
         >
+            <Grid
+                container
+                spacing={3}
+                style={{ marginTop: 10, marginBottom: 50 }}
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+            >
+                <Grid item xs={4}>
+                    <Autocomplete
+                        onChange={(event, user) => {
+                            setUser(user)
+                        }}
+                        value={user}
+                        classes={classes.textField}
+                        options={users}
+                        getOptionLabel={(option) => option.name}
+                        getOptionSelected={(option, value) =>
+                            value === undefined ||
+                            value === '' ||
+                            option.name === value.name
+                        }
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                placeholder="Select a Employee from Here"
+                                margin="normal"
+                                variant="outlined"
+                                error={!!errors.Job}
+                                helperText={errors.Job && 'job required'}
+                                required
+                            />
+                        )}
+                    />
+                </Grid>
+            </Grid>
             <Grid
                 container
                 spacing={3}

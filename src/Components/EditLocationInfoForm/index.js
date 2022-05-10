@@ -16,93 +16,34 @@ import {
     DialogActions,
 } from '@material-ui/core'
 import Autocomplete from '@mui/material/Autocomplete'
-import { Work } from '@mui/icons-material'
-import Avatar from '@mui/material/Avatar'
-import axios from 'axios'
-import { Navigate, useNavigate } from 'react-router-dom'
 import { useForm, Controller } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
 import { Country, State, City } from 'country-state-city'
-import CadidateFormStyles from './style'
+import JobFormStyles from './style'
 import { axiosClient, httpOptions } from '../../config'
-import { useSnackbar } from 'notistack'
 
-function CadidateForm({ open, handleClose }) {
-    const [cityList, setCityList] = React.useState([])
-    const [state, setState] = React.useState('')
-    const classes = CadidateFormStyles
-    const client = localStorage.getItem('client')
-    const user = JSON.parse(localStorage.getItem('user'))
-    const [jobList, setJobList] = React.useState([])
-    const source = 'Admin panel'
-    const { enqueueSnackbar } = useSnackbar()
-    const referral = user.name
+function EditLocationInfoForm({ open, handleClose, row }) {
+    const classes = JobFormStyles
     const onSubmit = (formInputs) => {
-        // event.preventDefault();
         const data = {
-            jobId: formInputs.job.id,
-            client_id: client,
-            source: source,
-            referral: referral,
-            first_name: formInputs.firstName,
-            last_name: formInputs.lastName,
-            email: formInputs.email,
-            phone_number: formInputs.phone,
-            status: 'applied',
-            status_code: 0,
+            id: row.id,
+            city: row.city,
+            state: row.state,
+            state_code: row.state_code,
+            hourly_rate: formInputs.rate,
+            signin_bonas: formInputs.bonuses,
+            shift_detail: formInputs.description,
         }
-        console.log(data)
         axiosClient
-            .post('user/profile/create', data, httpOptions)
+            .post('user/profile/updateUserSettingLocation', data, httpOptions)
             .then((response) => {
                 if (response.status === 200) {
                     reset()
-                    enqueueSnackbar('New Candidate Added Successfully', {
-                        variant: 'success',
-                        autoHideDuration: 3000,
-                        preventDuplicate: true,
-                    })
-                } else {
-                    enqueueSnackbar('Failed to Add New Candidate', {
-                        variant: 'error',
-                        autoHideDuration: 3000,
-                        preventDuplicate: true,
-                    })
                 }
             })
             .catch((error) => {
                 console.log(error.response)
-                enqueueSnackbar('Failed to Add New Candidate', {
-                    variant: 'error',
-                    autoHideDuration: 3000,
-                    preventDuplicate: true,
-                })
             })
     }
-
-    const getAllJobs = () => {
-        const data = {
-            clientId: client,
-        }
-        try {
-            axiosClient
-                .post('jobs/list/getAll', data, httpOptions)
-                .then((response) => {
-                    if (response.status === 200) {
-                        const res = response.data.data
-                        setJobList(res)
-                    } else {
-                        // setError(true)
-                    }
-                })
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
-    React.useEffect(() => {
-        getAllJobs()
-    }, [])
 
     const {
         control,
@@ -113,9 +54,23 @@ function CadidateForm({ open, handleClose }) {
         reset,
     } = useForm({
         mode: 'onChange',
-        defaultValues: { job: null, state: null, city: null, description: '' },
+        defaultValues: {
+            state: null,
+            city: null,
+            description: '',
+            rate: 0,
+            bonas: 0,
+        },
     })
 
+    React.useEffect(() => {
+        setValue('state', row.state)
+        setValue('city', row.city)
+        setValue('description', row.shift_detail)
+        setValue('rate', row.hourly_rate)
+        setValue('bonas', row.signin_bonas)
+    }, [row])
+    console.log(row)
     return (
         <Grid>
             <Dialog
@@ -124,11 +79,10 @@ function CadidateForm({ open, handleClose }) {
                 open={open}
                 onClose={handleClose}
             >
-                <DialogTitle>Welcome To Client</DialogTitle>
+                <DialogTitle>Edit Location Info</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        filling out the following form and submit then we will
-                        reach out to your for further instructions
+                        Edit Location Info by filling out the following fields
                     </DialogContentText>
                     <Box
                         noValidate
@@ -140,7 +94,7 @@ function CadidateForm({ open, handleClose }) {
                             width: 'fit-content',
                         }}
                     >
-                        <form>
+                        <form noValidate>
                             <Grid container spacing={1}>
                                 <Grid
                                     item
@@ -148,201 +102,7 @@ function CadidateForm({ open, handleClose }) {
                                     className={classes.textFieldContainer}
                                 >
                                     <Typography className={classes.labelText}>
-                                        Enter Your First Name
-                                    </Typography>
-
-                                    <Controller
-                                        control={control}
-                                        name="firstName"
-                                        rules={{ required: true }}
-                                        render={({
-                                            field: { onChange, value },
-                                        }) => (
-                                            <TextField
-                                                value={value}
-                                                variant="outlined"
-                                                placeholder="First Name"
-                                                fullWidth={true}
-                                                error={!!errors.firstName}
-                                                classes={classes.textField}
-                                                helperText={
-                                                    errors.firstName &&
-                                                    'First Name required'
-                                                }
-                                                onChange={(event) => {
-                                                    onChange(event.target.value)
-                                                }}
-                                            />
-                                        )}
-                                    />
-                                </Grid>
-                                <Grid
-                                    item
-                                    xs={12}
-                                    className={classes.textFieldContainer}
-                                >
-                                    <Typography className={classes.labelText}>
-                                        Enter Your Last Name
-                                    </Typography>
-                                    <Controller
-                                        control={control}
-                                        name="lastName"
-                                        rules={{ required: true }}
-                                        render={({
-                                            field: { onChange, value },
-                                        }) => (
-                                            <TextField
-                                                value={value}
-                                                variant="outlined"
-                                                placeholder="Last Name"
-                                                fullWidth={true}
-                                                classes={classes.textField}
-                                                error={!!errors.lastName}
-                                                helperText={
-                                                    errors.lastName &&
-                                                    'Last Name required'
-                                                }
-                                                onChange={(event) => {
-                                                    onChange(event.target.value)
-                                                }}
-                                            />
-                                        )}
-                                    />
-                                </Grid>
-                                <Grid
-                                    item
-                                    xs={12}
-                                    className={classes.textFieldContainer}
-                                >
-                                    <Typography className={classes.labelText}>
-                                        Enter Your Phone Number
-                                    </Typography>
-                                    <Controller
-                                        control={control}
-                                        name="phone"
-                                        rules={{ required: true }}
-                                        render={({
-                                            field: { onChange, value },
-                                        }) => (
-                                            <TextField
-                                                value={value}
-                                                variant="outlined"
-                                                placeholder="Phone Number"
-                                                fullWidth={true}
-                                                classes={classes.textField}
-                                                error={!!errors.phone}
-                                                helperText={
-                                                    errors.phone &&
-                                                    'phone required'
-                                                }
-                                                onChange={(event) => {
-                                                    onChange(event.target.value)
-                                                }}
-                                            />
-                                        )}
-                                    />
-                                </Grid>
-                                <Grid
-                                    item
-                                    xs={12}
-                                    className={classes.textFieldContainer}
-                                >
-                                    <Typography className={classes.labelText}>
-                                        Enter Your Email
-                                    </Typography>
-                                    <Controller
-                                        control={control}
-                                        name="email"
-                                        rules={{ required: true }}
-                                        render={({
-                                            field: { onChange, value },
-                                        }) => (
-                                            <TextField
-                                                value={value}
-                                                variant="outlined"
-                                                placeholder="Email"
-                                                fullWidth={true}
-                                                classes={classes.textField}
-                                                error={!!errors.email}
-                                                helperText={
-                                                    errors.email &&
-                                                    'email required'
-                                                }
-                                                onChange={(event) => {
-                                                    onChange(event.target.value)
-                                                }}
-                                            />
-                                        )}
-                                    />
-                                </Grid>
-                                <Grid
-                                    item
-                                    xs={12}
-                                    className={classes.textFieldContainer}
-                                >
-                                    <Typography className={classes.labelText}>
-                                        Select Job from Here
-                                    </Typography>
-                                    <Controller
-                                        control={control}
-                                        name="job"
-                                        rules={{ required: true }}
-                                        render={({
-                                            field: { onChange, value },
-                                        }) => (
-                                            <Autocomplete
-                                                onChange={(event, job) => {
-                                                    onChange(job)
-                                                    console.log(job)
-                                                    setValue(
-                                                        'state',
-                                                        job.state_name
-                                                    )
-                                                    setValue(
-                                                        'city',
-                                                        job.city_name
-                                                    )
-                                                }}
-                                                value={value}
-                                                classes={classes.textField}
-                                                options={jobList}
-                                                getOptionLabel={(option) =>
-                                                    option.job_title
-                                                }
-                                                getOptionSelected={(
-                                                    option,
-                                                    value
-                                                ) =>
-                                                    value === undefined ||
-                                                    value === '' ||
-                                                    option.job_title ===
-                                                        value.job_title
-                                                }
-                                                renderInput={(params) => (
-                                                    <TextField
-                                                        {...params}
-                                                        placeholder="Select a Job"
-                                                        margin="normal"
-                                                        variant="outlined"
-                                                        error={!!errors.Job}
-                                                        helperText={
-                                                            errors.Job &&
-                                                            'job required'
-                                                        }
-                                                        required
-                                                    />
-                                                )}
-                                            />
-                                        )}
-                                    />
-                                </Grid>
-                                <Grid
-                                    item
-                                    xs={12}
-                                    className={classes.textFieldContainer}
-                                >
-                                    <Typography className={classes.labelText}>
-                                        Job State
+                                        State
                                     </Typography>
                                     <Controller
                                         control={control}
@@ -356,13 +116,13 @@ function CadidateForm({ open, handleClose }) {
                                                 variant="outlined"
                                                 placeholder="State"
                                                 fullWidth={true}
-                                                classes={classes.textField}
                                                 error={!!errors.state}
+                                                classes={classes.textField}
+                                                disabled
                                                 helperText={
                                                     errors.state &&
-                                                    'state required'
+                                                    'State required'
                                                 }
-                                                disabled={true}
                                                 onChange={(event) => {
                                                     onChange(event.target.value)
                                                 }}
@@ -388,14 +148,14 @@ function CadidateForm({ open, handleClose }) {
                                             <TextField
                                                 value={value}
                                                 variant="outlined"
-                                                placeholder="city"
+                                                placeholder="City"
                                                 fullWidth={true}
-                                                classes={classes.textField}
                                                 error={!!errors.city}
-                                                disabled={true}
+                                                classes={classes.textField}
+                                                disabled
                                                 helperText={
                                                     errors.city &&
-                                                    'city required'
+                                                    'City required'
                                                 }
                                                 onChange={(event) => {
                                                     onChange(event.target.value)
@@ -404,6 +164,110 @@ function CadidateForm({ open, handleClose }) {
                                         )}
                                     />
                                 </Grid>
+                                <Grid
+                                    item
+                                    xs={12}
+                                    className={classes.textFieldContainer}
+                                >
+                                    <Typography className={classes.labelText}>
+                                        Hourly Rate
+                                    </Typography>
+
+                                    <Controller
+                                        control={control}
+                                        name="rate"
+                                        rules={{ required: true }}
+                                        render={({
+                                            field: { onChange, value },
+                                        }) => (
+                                            <TextField
+                                                value={value}
+                                                variant="outlined"
+                                                placeholder="Hourly Rate"
+                                                fullWidth={true}
+                                                type="number"
+                                                error={!!errors.rate}
+                                                classes={classes.textField}
+                                                helperText={
+                                                    errors.rate &&
+                                                    'Hourly Rate required'
+                                                }
+                                                onChange={(event) => {
+                                                    onChange(event.target.value)
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid
+                                    item
+                                    xs={12}
+                                    className={classes.textFieldContainer}
+                                >
+                                    <Typography className={classes.labelText}>
+                                        Signin Bonas
+                                    </Typography>
+
+                                    <Controller
+                                        control={control}
+                                        name="bonas"
+                                        rules={{ required: true }}
+                                        render={({
+                                            field: { onChange, value },
+                                        }) => (
+                                            <TextField
+                                                value={value}
+                                                variant="outlined"
+                                                placeholder="Signin Bonas"
+                                                fullWidth={true}
+                                                type="number"
+                                                error={!!errors.rate}
+                                                classes={classes.textField}
+                                                helperText={
+                                                    errors.rate &&
+                                                    'Signin Bonas Name required'
+                                                }
+                                                onChange={(event) => {
+                                                    onChange(event.target.value)
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid
+                                    item
+                                    xs={12}
+                                    className={classes.textFieldContainer}
+                                >
+                                    <Typography className={classes.labelText}>
+                                        Enter Your Description
+                                    </Typography>
+                                    <Controller
+                                        control={control}
+                                        name="description"
+                                        rules={{ required: true }}
+                                        render={({
+                                            field: { onChange, value },
+                                        }) => (
+                                            <TextField
+                                                variant="outlined"
+                                                placeholder="Description"
+                                                fullWidth={true}
+                                                classes={classes.textField}
+                                                value={value}
+                                                error={!!errors.description}
+                                                helperText={
+                                                    errors.description &&
+                                                    'description required'
+                                                }
+                                                onChange={(event) => {
+                                                    onChange(event.target.value)
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+
                                 <Grid
                                     container
                                     direction="row"
@@ -427,7 +291,7 @@ function CadidateForm({ open, handleClose }) {
                                             onSubmit(d)
                                         )}
                                     >
-                                        Submit
+                                        save
                                     </Button>
                                 </Grid>
                             </Grid>
@@ -439,4 +303,4 @@ function CadidateForm({ open, handleClose }) {
     )
 }
 
-export default CadidateForm
+export default EditLocationInfoForm

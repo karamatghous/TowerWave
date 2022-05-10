@@ -179,6 +179,23 @@ export default function PrimarySearchAppBar() {
                             >
                                 Candidates
                             </Typography>
+                            {user.isManager && (
+                                <Typography
+                                    variant="h6"
+                                    noWrap
+                                    component="span"
+                                    style={{
+                                        cursor: 'pointer',
+                                        marginLeft: 50,
+                                    }}
+                                    onClick={() =>
+                                        navigate('/managers/employees')
+                                    }
+                                >
+                                    My Employees Candidates
+                                </Typography>
+                            )}
+
                             <Typography
                                 variant="h6"
                                 noWrap

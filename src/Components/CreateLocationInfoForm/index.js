@@ -20,50 +20,50 @@ import { useForm, Controller } from 'react-hook-form'
 import { Country, State, City } from 'country-state-city'
 import JobFormStyles from './style'
 import { axiosClient, httpOptions } from '../../config'
+import Loader from '../Loader'
 import { useSnackbar } from 'notistack'
 
-function EditJobForm({ open, handleClose, job }) {
+function CreateJobForm({ open, handleClose }) {
     const [cityList, setCityList] = React.useState([])
     const [state, setState] = React.useState('')
     const classes = JobFormStyles
     const client = localStorage.getItem('client')
     const user = JSON.parse(localStorage.getItem('user'))
-
-    const [defaultCity, setDefaultCity] = React.useState(null)
-    const [defaultState, setDefaultState] = React.useState(null)
+    const [loading, setLoading] = React.useState(false)
     const { enqueueSnackbar } = useSnackbar()
     const onSubmit = (formInputs) => {
+        setLoading(true)
         const data = {
-            id: job.id,
-            clientId: job.clientId,
-            employerId: job.employerId,
-            job_title: formInputs.job,
-            job_description: formInputs.description,
+            city: formInputs.city.name,
+            state: formInputs.state.name,
             state_code: formInputs.state.isoCode,
-            state_name: formInputs.state.name,
-            city_name: formInputs.city.name,
+            hourly_rate: formInputs.rate,
+            signin_bonas: formInputs.bonas,
+            shift_detail: formInputs.description,
         }
         axiosClient
-            .post('job/application/edit', data, httpOptions)
+            .post('user/profile/createSettingLocation', data, httpOptions)
             .then((response) => {
                 if (response.status === 200) {
                     reset()
-                    enqueueSnackbar('Job Update Successfully', {
+                    enqueueSnackbar('New Location Info Added Successfully', {
                         variant: 'success',
                         autoHideDuration: 3000,
                         preventDuplicate: true,
                     })
                 } else {
-                    enqueueSnackbar('Failed to Edit Job', {
+                    enqueueSnackbar('Failed to Add New Location Info', {
                         variant: 'error',
                         autoHideDuration: 3000,
                         preventDuplicate: true,
                     })
                 }
+                setLoading(false)
             })
             .catch((error) => {
                 console.log(error.response)
-                enqueueSnackbar('Failed to Edit Job', {
+                setLoading(false)
+                enqueueSnackbar('Failed to Add New Location Info', {
                     variant: 'error',
                     autoHideDuration: 3000,
                     preventDuplicate: true,
@@ -81,47 +81,36 @@ function EditJobForm({ open, handleClose, job }) {
     } = useForm({
         mode: 'onChange',
         defaultValues: {
-            job: job?.job_title,
-            state: defaultState,
-            city: defaultCity,
-            description: job?.job_description,
+            state: null,
+            city: null,
+            description: '',
+            rate: 0,
+            bonas: 0,
         },
     })
 
     React.useEffect(() => {
-        State.getStatesOfCountry('US')
-        console.log(getValues('state'))
+        if (getValues('state')?.isoCode) {
+            // setState(getValues("state").isoCode);
+            //   console.log(City.getCitiesOfState("CA"))
+            // setCityList(City.getCitiesOfState(getValues("state").isoCode));
+        }
     }, [getValues('state')])
-
-    React.useEffect(() => {
-        setValue('job', job?.job_title)
-        setValue('description', job?.job_description)
-        setValue(
-            'city',
-            City.getCitiesOfState('US', job?.state_code).find(
-                (city) => city.name === job.city_name
-            )
-        )
-        setValue(
-            'state',
-            State.getStatesOfCountry('US').find(
-                (state) => state.isoCode === job?.state_code
-            )
-        )
-    }, [job])
 
     return (
         <Grid>
+            <Loader loading={loading} />
             <Dialog
                 fullWidth={true}
                 maxWidth={'sm'}
                 open={open}
                 onClose={handleClose}
             >
-                <DialogTitle>Edit Job</DialogTitle>
+                <DialogTitle>New Location Info</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Edit a job by filling out the following fields
+                        You can create a New Location Info by filling out the
+                        following fields
                     </DialogContentText>
                     <Box
                         noValidate
@@ -141,40 +130,6 @@ function EditJobForm({ open, handleClose, job }) {
                                     className={classes.textFieldContainer}
                                 >
                                     <Typography className={classes.labelText}>
-                                        Job Name
-                                    </Typography>
-
-                                    <Controller
-                                        control={control}
-                                        name="job"
-                                        rules={{ required: true }}
-                                        render={({
-                                            field: { onChange, value },
-                                        }) => (
-                                            <TextField
-                                                value={value}
-                                                variant="outlined"
-                                                placeholder="Job Name"
-                                                fullWidth={true}
-                                                error={!!errors.job}
-                                                classes={classes.textField}
-                                                helperText={
-                                                    errors.job &&
-                                                    'Job Name required'
-                                                }
-                                                onChange={(event) => {
-                                                    onChange(event.target.value)
-                                                }}
-                                            />
-                                        )}
-                                    />
-                                </Grid>
-                                <Grid
-                                    item
-                                    xs={12}
-                                    className={classes.textFieldContainer}
-                                >
-                                    <Typography className={classes.labelText}>
                                         Job State
                                     </Typography>
                                     <Controller
@@ -187,7 +142,6 @@ function EditJobForm({ open, handleClose, job }) {
                                             <Autocomplete
                                                 onChange={(event, state) => {
                                                     setState(state.isoCode)
-                                                    setValue('city', null)
                                                     onChange(state)
                                                 }}
                                                 value={value}
@@ -284,6 +238,76 @@ function EditJobForm({ open, handleClose, job }) {
                                     className={classes.textFieldContainer}
                                 >
                                     <Typography className={classes.labelText}>
+                                        Hourly Rate
+                                    </Typography>
+
+                                    <Controller
+                                        control={control}
+                                        name="rate"
+                                        rules={{ required: true }}
+                                        render={({
+                                            field: { onChange, value },
+                                        }) => (
+                                            <TextField
+                                                value={value}
+                                                variant="outlined"
+                                                placeholder="Hourly Rate"
+                                                fullWidth={true}
+                                                type="number"
+                                                error={!!errors.rate}
+                                                classes={classes.textField}
+                                                helperText={
+                                                    errors.rate &&
+                                                    'Hourly Rate required'
+                                                }
+                                                onChange={(event) => {
+                                                    onChange(event.target.value)
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid
+                                    item
+                                    xs={12}
+                                    className={classes.textFieldContainer}
+                                >
+                                    <Typography className={classes.labelText}>
+                                        Signin Bonas
+                                    </Typography>
+
+                                    <Controller
+                                        control={control}
+                                        name="bonas"
+                                        rules={{ required: true }}
+                                        render={({
+                                            field: { onChange, value },
+                                        }) => (
+                                            <TextField
+                                                value={value}
+                                                variant="outlined"
+                                                placeholder="Signin Bonas"
+                                                fullWidth={true}
+                                                type="number"
+                                                error={!!errors.rate}
+                                                classes={classes.textField}
+                                                helperText={
+                                                    errors.rate &&
+                                                    'Signin Bonas Name required'
+                                                }
+                                                onChange={(event) => {
+                                                    onChange(event.target.value)
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid
+                                    item
+                                    xs={12}
+                                    className={classes.textFieldContainer}
+                                >
+                                    <Typography className={classes.labelText}>
                                         Enter Your Description
                                     </Typography>
                                     <Controller
@@ -347,4 +371,4 @@ function EditJobForm({ open, handleClose, job }) {
     )
 }
 
-export default EditJobForm
+export default CreateJobForm

@@ -17,6 +17,7 @@ import {
     List,
     ListItem,
 } from '@material-ui/core'
+import { uniqBy } from 'lodash'
 import moment from 'moment'
 import SearchIcon from '@mui/icons-material/Search'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
@@ -34,19 +35,29 @@ import JobPageStyles from './style'
 import CreateJobForm from '../CreateJobForm'
 import { axiosClient, httpOptions } from '../../config'
 import EditJobForm from '../EditJobForm'
+import { Autocomplete } from '@mui/material'
+import { useSnackbar } from 'notistack'
 
 function JobsPage() {
     const [cityList, setCityList] = React.useState([])
+    const [stateList, setStateList] = React.useState([])
+    const [filter, setFilter] = React.useState({
+        city: [],
+        state: [],
+        user: [],
+    })
+    const [userList, setUserList] = React.useState([])
     const [search, setSearch] = React.useState('')
-    const [filter, setFilter] = React.useState(null)
     const [filterDialog, setFilterDialog] = React.useState(false)
     const [searchDialog, setSearchDialog] = React.useState(false)
     const [open, setOpen] = React.useState(false)
+    const [editOpen, setEditOpen] = React.useState(false)
     const date = new Date()
     const formatedDate = moment(date).format('MMMM DD, YYYY')
     const client = localStorage.getItem('client')
     const [jobList, setJobList] = React.useState([])
     const [editJob, editJobList] = React.useState(null)
+    const { enqueueSnackbar } = useSnackbar()
 
     const classes = JobPageStyles
     const copyJob = (job) => {
@@ -66,24 +77,28 @@ function JobsPage() {
             .then((response) => {
                 if (response.status === 200) {
                     reset()
+                    enqueueSnackbar('New Copy of Job is Created Successfully', {
+                        variant: 'success',
+                        autoHideDuration: 3000,
+                        preventDuplicate: true,
+                    })
+                } else {
+                    enqueueSnackbar('Failed to create new Copy of Job', {
+                        variant: 'error',
+                        autoHideDuration: 3000,
+                        preventDuplicate: true,
+                    })
                 }
             })
             .catch((error) => {
                 console.log(error.response)
+                enqueueSnackbar('Failed to create new Copy of Job', {
+                    variant: 'error',
+                    autoHideDuration: 3000,
+                    preventDuplicate: true,
+                })
             })
         getAllJobs()
-    }
-    const displayDesktop = () => {
-        return (
-            <Typography
-                gutterBottom
-                variant="h3"
-                align="center"
-                style={{ paddingTop: '10px' }}
-            >
-                {localStorage.getItem('client')}
-            </Typography>
-        )
     }
 
     const {
@@ -102,13 +117,11 @@ function JobsPage() {
         getAllJobs()
     }, [open])
 
-    const filterList = [
-        { name: 'Location', value: 'location' },
-        { name: 'Location', value: 'location' },
-        { name: 'Location', value: 'location' },
-    ]
-
     React.useEffect(() => {
+        const resultCity = uniqBy(City.getCitiesOfCountry('US'), 'name')
+        setCityList(resultCity)
+        const resultState = uniqBy(State.getStatesOfCountry('US'), 'name')
+        setStateList(resultState)
         getAllJobs()
     }, [])
 
@@ -132,6 +145,48 @@ function JobsPage() {
         }
     }
 
+    const getSearchJobs = (term) => {
+        const data = {
+            clientId: client,
+            term: term,
+        }
+        try {
+            axiosClient
+                .post('jobs/list/getSearchJob', data, httpOptions)
+                .then((response) => {
+                    if (response.status === 200) {
+                        const res = response.data.data
+                        setJobList(res)
+                    } else {
+                        // setError(true)
+                    }
+                })
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    const getFilterJobs = () => {
+        const data = {
+            clientId: client,
+            filter: filter,
+        }
+        try {
+            axiosClient
+                .post('jobs/list/getFilterJob', data, httpOptions)
+                .then((response) => {
+                    if (response.status === 200) {
+                        const res = response.data.data
+                        setJobList(res)
+                    } else {
+                        // setError(true)
+                    }
+                })
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     return (
         <div
             style={{
@@ -141,8 +196,8 @@ function JobsPage() {
         >
             <CreateJobForm open={open} handleClose={() => setOpen(false)} />
             <EditJobForm
-                open={open}
-                handleClose={() => setOpen(false)}
+                open={editOpen}
+                handleClose={() => setEditOpen(false)}
                 job={editJob}
             />
             <Grid
@@ -183,9 +238,17 @@ function JobsPage() {
                             >
                                 <TextField
                                     value={search}
-                                    onChange={(event) =>
+                                    onChange={(event) => {
                                         setSearch(event.target.value)
-                                    }
+                                        if (event.target.value === '') {
+                                            getAllJobs()
+                                        }
+                                    }}
+                                    onKeyPress={(event) => {
+                                        if (event.key === 'Enter') {
+                                            getSearchJobs(event.target.value)
+                                        }
+                                    }}
                                     type="string"
                                     placeholder="Search"
                                     className={classes.searchTextField}
@@ -195,26 +258,129 @@ function JobsPage() {
                         <Dialog
                             onClose={() => setFilterDialog(false)}
                             open={filterDialog}
+                            fullWidth
+                            maxWidth="xs"
                         >
                             <DialogTitle>Select a Filter</DialogTitle>
-                            <List sx={{ pt: 0 }}>
-                                {filterList.map((item) => (
-                                    <ListItem
-                                        button
-                                        onClick={() => {
-                                            setFilterDialog(false)
-                                            setFilter(item.value)
+                            <List sx={{ padding: 0 }}>
+                                <ListItem
+                                    key={'cityfilter'}
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        paddingTop: 0,
+                                        paddingBottom: 0,
+                                    }}
+                                >
+                                    <Autocomplete
+                                        multiple
+                                        onChange={(event, city) => {
+                                            setFilter({ ...filter, city: city })
                                         }}
-                                        key={item.value}
+                                        value={filter.city}
+                                        classes={classes.textField}
+                                        disableCloseOnSelect
+                                        options={cityList}
+                                        getOptionLabel={(option) => option.name}
+                                        key="autocomplete"
+                                        getOptionSelected={(option, value) =>
+                                            value === undefined ||
+                                            value === '' ||
+                                            option.name === value.name
+                                        }
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="City"
+                                                placeholder="city"
+                                                margin="normal"
+                                                variant="outlined"
+                                            />
+                                        )}
+                                        fullWidth
+                                    />
+                                </ListItem>
+
+                                <ListItem
+                                    key={'statefilter'}
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        paddingTop: 0,
+                                        paddingBottom: 0,
+                                    }}
+                                >
+                                    <Autocomplete
+                                        multiple
+                                        onChange={(event, state) => {
+                                            setFilter({
+                                                ...filter,
+                                                state: state,
+                                            })
+                                        }}
+                                        value={filter.state}
+                                        classes={classes.textField}
+                                        disableCloseOnSelect
+                                        options={stateList}
+                                        getOptionLabel={(option) => option.name}
+                                        key="autocomplete"
+                                        getOptionSelected={(option, value) =>
+                                            value === undefined ||
+                                            value === '' ||
+                                            option.name === value.name
+                                        }
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="State"
+                                                placeholder="State"
+                                                margin="normal"
+                                                variant="outlined"
+                                            />
+                                        )}
+                                        fullWidth
+                                    />
+                                </ListItem>
+                                <ListItem
+                                    key="btn"
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'end',
+                                        alignItems: 'center',
+                                        paddingTop: 0,
+                                        paddingBottom: 0,
+                                    }}
+                                >
+                                    <Button
+                                        onClick={() => {
+                                            getFilterJobs()
+                                            setFilterDialog(false)
+                                        }}
                                         style={{
-                                            display: 'flex',
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
+                                            background: '#3f50b5',
+                                            color: '#FFFFFF',
+                                            textTransform: 'capitalize',
                                         }}
                                     >
-                                        {item.name}
-                                    </ListItem>
-                                ))}
+                                        Filter
+                                    </Button>
+                                    <Button
+                                        onClick={() => {
+                                            getAllJobs()
+                                            setFilterDialog(false)
+                                        }}
+                                        style={{
+                                            background: '#CECECE',
+                                            color: '#FFFFFF',
+                                            marginLeft: '10px',
+                                            textTransform: 'capitalize',
+                                        }}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </ListItem>
                             </List>
                         </Dialog>
                         <Box
@@ -451,7 +617,10 @@ function JobsPage() {
                                         }}
                                     />
                                     <EditIcon
-                                        onClick={() => console.log('hi')}
+                                        onClick={() => {
+                                            editJobList(job)
+                                            setEditOpen(true)
+                                        }}
                                         style={{
                                             margin: '0px 5px',
                                             cursor: 'pointer',

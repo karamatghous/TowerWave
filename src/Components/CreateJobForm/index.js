@@ -20,6 +20,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { Country, State, City } from 'country-state-city'
 import JobFormStyles from './style'
 import { axiosClient, httpOptions } from '../../config'
+import { useSnackbar } from 'notistack'
 
 function CreateJobForm({ open, handleClose }) {
     const [cityList, setCityList] = React.useState([])
@@ -27,6 +28,7 @@ function CreateJobForm({ open, handleClose }) {
     const classes = JobFormStyles
     const client = localStorage.getItem('client')
     const user = JSON.parse(localStorage.getItem('user'))
+    const { enqueueSnackbar } = useSnackbar()
     const onSubmit = (formInputs) => {
         const data = {
             clientId: client,
@@ -38,18 +40,30 @@ function CreateJobForm({ open, handleClose }) {
             city_name: formInputs.city.name,
         }
         axiosClient
-            .post(
-                'http://localhost:8001/api/job/application/create',
-                data,
-                httpOptions
-            )
+            .post('job/application/create', data, httpOptions)
             .then((response) => {
                 if (response.status === 200) {
                     reset()
+                    enqueueSnackbar('New Job is Created Successfully', {
+                        variant: 'success',
+                        autoHideDuration: 3000,
+                        preventDuplicate: true,
+                    })
+                } else {
+                    enqueueSnackbar('Failed to Create New Job', {
+                        variant: 'error',
+                        autoHideDuration: 3000,
+                        preventDuplicate: true,
+                    })
                 }
             })
             .catch((error) => {
                 console.log(error.response)
+                enqueueSnackbar('Failed to Create New Job', {
+                    variant: 'error',
+                    autoHideDuration: 3000,
+                    preventDuplicate: true,
+                })
             })
     }
 

@@ -10,6 +10,8 @@ import SettingPage from './Components/SettingPage'
 import RecruitmentPage from './Components/RecruitmentPage'
 import Landing from './Components/Landing'
 import Login from './Components/Login'
+import NewPage from './Components/NewPage'
+import MyEmployCandidate from './Components/MyEmployCandidate'
 import './App.css'
 import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom'
 import history from './history'
@@ -34,6 +36,10 @@ function App() {
                         <Route path="/jobs" element={<JobsPage />} />
                         <Route path="/candidates" element={<CadidatePage />} />
                         <Route path="/login" element={<Login />} />
+                        <Route
+                            path="/managers/employees"
+                            element={<MyEmployCandidate />}
+                        />
                     </Routes>
                 </BrowserRouter>
             </div>

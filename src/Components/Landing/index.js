@@ -15,29 +15,6 @@ export default function Splash() {
             value: 'TowerWav',
             label: 'TowerWav',
         },
-        {
-            value: 'Company A',
-            label: 'Company A',
-        },
-        {
-            value: 'Company B',
-            label: 'Company B',
-        },
-        {
-            value: 'Company B',
-            label: 'Company B',
-        },
-    ]
-
-    const yes_no = [
-        {
-            value: 'yes',
-            label: 'Yes',
-        },
-        {
-            value: 'no',
-            label: 'No',
-        },
     ]
 
     React.useEffect(() => {

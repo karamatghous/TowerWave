@@ -13,19 +13,9 @@ import TableSortLabel from '@mui/material/TableSortLabel'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Paper from '@mui/material/Paper'
-import Checkbox from '@mui/material/Checkbox'
-import IconButton from '@mui/material/IconButton'
-import Tooltip from '@mui/material/Tooltip'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Switch from '@mui/material/Switch'
-import DeleteIcon from '@mui/icons-material/Delete'
-import FilterListIcon from '@mui/icons-material/FilterList'
-import { visuallyHidden } from '@mui/utils'
 import SearchIcon from '@mui/icons-material/Search'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import AddIcon from '@mui/icons-material/Add'
-import LinkIcon from '@mui/icons-material/Link'
-import EditIcon from '@mui/icons-material/Edit'
 import CadidatePageStyle from './style'
 import {
     Dialog,
@@ -34,11 +24,14 @@ import {
     List,
     ListItem,
     TextField,
+    Button,
 } from '@material-ui/core'
 import CandidateForm from '../CadidateForm'
 import { axiosClient, httpOptions } from '../../config'
 import moment from 'moment'
 import { Autocomplete } from '@mui/material'
+import { City, State } from 'country-state-city'
+import { uniqBy } from 'lodash'
 
 function createData(name, calories, fat, carbs, protein) {
     return {
@@ -139,7 +132,7 @@ const headCells = [
         id: 'started',
         numeric: false,
         disablePadding: false,
-        label: 'Date Started',
+        label: 'Last Update',
     },
     {
         id: 'recruiter',
@@ -234,16 +227,27 @@ export default function EnhancedTable() {
     const [selected, setSelected] = React.useState([])
     const [page, setPage] = React.useState(0)
     const [dense, setDense] = React.useState(true)
+
     const [rows, setRows] = React.useState([])
+    const [jobList, setJobList] = React.useState([])
     const [users, setUsers] = React.useState([])
     const [rowsPerPage, setRowsPerPage] = React.useState(5)
     const [search, setSearch] = React.useState('')
-    const [filter, setFilter] = React.useState(null)
     const [filterDialog, setFilterDialog] = React.useState(false)
     const [searchDialog, setSearchDialog] = React.useState(false)
     const [open, setOpen] = React.useState(false)
     const client = localStorage.getItem('client')
     const classes = CadidatePageStyle
+    const [cityList, setCityList] = React.useState([])
+    const [stateList, setStateList] = React.useState([])
+    const [filter, setFilter] = React.useState({
+        city: [],
+        state: [],
+        user: [],
+        jobs: [],
+        status: '',
+        source: '',
+    })
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc'
@@ -299,10 +303,16 @@ export default function EnhancedTable() {
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0
 
-    const filterList = [
-        { name: 'Location', value: 'location' },
-        { name: 'Location', value: 'location' },
-        { name: 'Location', value: 'location' },
+    const statusList = [
+        { name: 'Applied', value: '0' },
+        { name: 'Assigned', value: '1' },
+        { name: 'In-Progress', value: '2' },
+    ]
+
+    const sourceList = [
+        { name: 'Admin Panel', value: 'Admin panel' },
+        { name: 'Facebook', value: 'Facebook' },
+        { name: 'Indeed', value: 'Indeed' },
     ]
 
     const getAllJobs = () => {
@@ -312,6 +322,48 @@ export default function EnhancedTable() {
         try {
             axiosClient
                 .post('user/profile/getAll', data, httpOptions)
+                .then((response) => {
+                    if (response.status === 200) {
+                        const res = response.data.data
+                        setRows(res)
+                    } else {
+                        // setError(true)
+                    }
+                })
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    const getFilterJobs = () => {
+        const data = {
+            clientId: client,
+            filter: filter,
+        }
+        try {
+            axiosClient
+                .post('user/profile/showFilterUsers', data, httpOptions)
+                .then((response) => {
+                    if (response.status === 200) {
+                        const res = response.data.data
+                        setRows(res)
+                    } else {
+                        // setError(true)
+                    }
+                })
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    const getSearchJobs = (term) => {
+        const data = {
+            clientId: client,
+            term: term,
+        }
+        try {
+            axiosClient
+                .post('user/profile/showSearchUsers', data, httpOptions)
                 .then((response) => {
                     if (response.status === 200) {
                         const res = response.data.data
@@ -349,6 +401,8 @@ export default function EnhancedTable() {
         const data = {
             id: row.id,
             employerId: selectedUser.id,
+            status: 'assigned',
+            status_code: 1,
         }
         try {
             axiosClient
@@ -365,7 +419,32 @@ export default function EnhancedTable() {
         }
     }
 
+    const getJobList = () => {
+        const data = {
+            clientId: client,
+        }
+        try {
+            axiosClient
+                .post('jobs/list/getAll', data, httpOptions)
+                .then((response) => {
+                    if (response.status === 200) {
+                        const res = response.data.data
+                        setJobList(res)
+                    } else {
+                        // setError(true)
+                    }
+                })
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     React.useEffect(() => {
+        const resultCity = uniqBy(City.getCitiesOfCountry('US'), 'name')
+        setCityList(resultCity)
+        const resultState = uniqBy(State.getStatesOfCountry('US'), 'name')
+        setStateList(resultState)
+        getJobList()
         getAllJobs()
         getAllUsers()
     }, [])
@@ -417,9 +496,19 @@ export default function EnhancedTable() {
                                 >
                                     <TextField
                                         value={search}
-                                        onChange={(event) =>
+                                        onChange={(event) => {
                                             setSearch(event.target.value)
-                                        }
+                                            if (event.target.value === '') {
+                                                getAllJobs()
+                                            }
+                                        }}
+                                        onKeyPress={(event) => {
+                                            if (event.key === 'Enter') {
+                                                getSearchJobs(
+                                                    event.target.value
+                                                )
+                                            }
+                                        }}
                                         type="string"
                                         placeholder="Search"
                                         className={classes.searchTextField}
@@ -429,26 +518,279 @@ export default function EnhancedTable() {
                             <Dialog
                                 onClose={() => setFilterDialog(false)}
                                 open={filterDialog}
+                                fullWidth
+                                maxWidth="xs"
                             >
                                 <DialogTitle>Select a Filter</DialogTitle>
-                                <List sx={{ pt: 0 }}>
-                                    {filterList.map((item) => (
-                                        <ListItem
-                                            button
-                                            onClick={() => {
-                                                setFilterDialog(false)
-                                                setFilter(item.value)
+                                <List sx={{ padding: 0 }}>
+                                    <ListItem
+                                        key={'cityfilter'}
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            paddingTop: 0,
+                                            paddingBottom: 0,
+                                        }}
+                                    >
+                                        <Autocomplete
+                                            multiple
+                                            onChange={(event, city) => {
+                                                setFilter({
+                                                    ...filter,
+                                                    city: city,
+                                                })
                                             }}
-                                            key={item.value}
+                                            value={filter.city}
+                                            classes={classes.textField}
+                                            disableCloseOnSelect
+                                            options={cityList}
+                                            getOptionLabel={(option) =>
+                                                option.name
+                                            }
+                                            key="autocomplete"
+                                            getOptionSelected={(
+                                                option,
+                                                value
+                                            ) =>
+                                                value === undefined ||
+                                                value === '' ||
+                                                option.name === value.name
+                                            }
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="City"
+                                                    placeholder="city"
+                                                    margin="normal"
+                                                    variant="outlined"
+                                                />
+                                            )}
+                                            fullWidth
+                                        />
+                                    </ListItem>
+                                    <ListItem
+                                        key={'statefilter'}
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            paddingTop: 0,
+                                            paddingBottom: 0,
+                                        }}
+                                    >
+                                        <Autocomplete
+                                            multiple
+                                            onChange={(event, state) => {
+                                                setFilter({
+                                                    ...filter,
+                                                    state: state,
+                                                })
+                                            }}
+                                            value={filter.state}
+                                            classes={classes.textField}
+                                            disableCloseOnSelect
+                                            options={stateList}
+                                            getOptionLabel={(option) =>
+                                                option.name
+                                            }
+                                            key="autocomplete"
+                                            getOptionSelected={(
+                                                option,
+                                                value
+                                            ) =>
+                                                value === undefined ||
+                                                value === '' ||
+                                                option.name === value.name
+                                            }
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="State"
+                                                    placeholder="State"
+                                                    margin="normal"
+                                                    variant="outlined"
+                                                />
+                                            )}
+                                            fullWidth
+                                        />
+                                    </ListItem>
+                                    <ListItem
+                                        key={'statusfilter'}
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            paddingTop: 0,
+                                            paddingBottom: 0,
+                                        }}
+                                    >
+                                        <Autocomplete
+                                            onChange={(event, status) => {
+                                                setFilter({
+                                                    ...filter,
+                                                    status: status,
+                                                })
+                                            }}
+                                            value={filter.status}
+                                            classes={classes.textField}
+                                            disableCloseOnSelect
+                                            options={statusList}
+                                            getOptionLabel={(option) =>
+                                                option.name
+                                            }
+                                            key="autocomplete"
+                                            getOptionSelected={(
+                                                option,
+                                                value
+                                            ) =>
+                                                value === undefined ||
+                                                value === '' ||
+                                                option.name === value.name
+                                            }
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Status"
+                                                    placeholder="Status"
+                                                    margin="normal"
+                                                    variant="outlined"
+                                                />
+                                            )}
+                                            fullWidth
+                                        />
+                                    </ListItem>
+
+                                    <ListItem
+                                        key={'filter'}
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            paddingTop: 0,
+                                            paddingBottom: 0,
+                                        }}
+                                    >
+                                        <Autocomplete
+                                            onChange={(event, source) => {
+                                                setFilter({
+                                                    ...filter,
+                                                    source: source,
+                                                })
+                                            }}
+                                            value={filter.source}
+                                            classes={classes.textField}
+                                            disableCloseOnSelect
+                                            options={sourceList}
+                                            getOptionLabel={(option) =>
+                                                option.name
+                                            }
+                                            key="autocomplete"
+                                            getOptionSelected={(
+                                                option,
+                                                value
+                                            ) =>
+                                                value === undefined ||
+                                                value === '' ||
+                                                option.name === value.name
+                                            }
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Source"
+                                                    placeholder="Source"
+                                                    margin="normal"
+                                                    variant="outlined"
+                                                />
+                                            )}
+                                            fullWidth
+                                        />
+                                    </ListItem>
+                                    <ListItem
+                                        key={'filter'}
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            paddingTop: 0,
+                                            paddingBottom: 0,
+                                        }}
+                                    >
+                                        <Autocomplete
+                                            onChange={(event, job) => {
+                                                setFilter({
+                                                    ...filter,
+                                                    jobs: job,
+                                                })
+                                            }}
+                                            value={filter.jobs}
+                                            classes={classes.textField}
+                                            disableCloseOnSelect
+                                            options={jobList}
+                                            getOptionLabel={(option) =>
+                                                option.job_title
+                                            }
+                                            key="autocomplete"
+                                            getOptionSelected={(
+                                                option,
+                                                value
+                                            ) =>
+                                                value === undefined ||
+                                                value === '' ||
+                                                option.job_title ===
+                                                    value.job_title
+                                            }
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Select a Job"
+                                                    placeholder="Job"
+                                                    margin="normal"
+                                                    variant="outlined"
+                                                />
+                                            )}
+                                            fullWidth
+                                        />
+                                    </ListItem>
+
+                                    <ListItem
+                                        key="btn"
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'end',
+                                            alignItems: 'center',
+                                            paddingTop: 0,
+                                            paddingBottom: 0,
+                                        }}
+                                    >
+                                        <Button
+                                            onClick={() => {
+                                                getFilterJobs()
+                                                setFilterDialog(false)
+                                            }}
                                             style={{
-                                                display: 'flex',
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
+                                                background: '#3f50b5',
+                                                color: '#FFFFFF',
+                                                textTransform: 'capitalize',
                                             }}
                                         >
-                                            {item.name}
-                                        </ListItem>
-                                    ))}
+                                            Filter
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
+                                                getAllJobs()
+                                                setFilterDialog(false)
+                                            }}
+                                            style={{
+                                                background: '#CECECE',
+                                                color: '#FFFFFF',
+                                                marginLeft: '10px',
+                                                textTransform: 'capitalize',
+                                            }}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </ListItem>
                                 </List>
                             </Dialog>
                             <Box
@@ -558,7 +900,7 @@ export default function EnhancedTable() {
                                                 {row.phone_number}
                                             </TableCell>
                                             <TableCell align="left">
-                                                applied
+                                                {row.status}
                                             </TableCell>
                                             <TableCell align="left">
                                                 {moment(row.createdAt).format(

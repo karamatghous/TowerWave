@@ -4,13 +4,16 @@ import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
 import { RecoilRoot } from 'recoil'
+import { SnackbarProvider } from 'notistack'
 
 ReactDOM.render(
-    <RecoilRoot>
-        <React.StrictMode>
-            <App />
-        </React.StrictMode>
-    </RecoilRoot>,
+    <SnackbarProvider maxSnack={3}>
+        <RecoilRoot>
+            <React.StrictMode>
+                <App />
+            </React.StrictMode>
+        </RecoilRoot>
+    </SnackbarProvider>,
     document.getElementById('root')
 )
 

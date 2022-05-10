@@ -15,6 +15,7 @@ import LoginStyles from './style'
 import { Box } from '@mui/system'
 import { axiosClient } from '../../config/index'
 import { Autocomplete } from '@mui/material'
+import { useSnackbar } from 'notistack'
 
 const roles = [
     {
@@ -45,6 +46,7 @@ function LoginForm() {
     const navigate = useNavigate()
     const classes = LoginStyles()
     const client = localStorage.getItem('client')
+    const { enqueueSnackbar } = useSnackbar()
 
     React.useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user'))
@@ -94,8 +96,18 @@ function LoginForm() {
                 .then((response) => {
                     if (response.status === 200) {
                         setSignup(!signup)
+                        enqueueSnackbar('Account Created Successfully', {
+                            variant: 'success',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
                     } else {
                         setError(true)
+                        enqueueSnackbar('Failed to Created Account', {
+                            variant: 'success',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
                     }
                 })
         } catch (err) {
