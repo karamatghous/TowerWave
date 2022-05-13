@@ -14,11 +14,13 @@ import JobPageStyles from './style'
 import { axiosClient, httpOptions } from '../../config'
 import { Button } from '@mui/material'
 import Steps from '../RecruitmentSteps'
+import LandingofRecruitment from '../LandingofRecruitment'
 
 function RecruitmentPage() {
     const date = new Date()
     const formatedDate = moment(date).format('MMMM DD, YYYY')
-    const client = localStorage.getItem('client')
+    const [client, setClient] = React.useState({})
+    const [location, setLocation] = React.useState({})
     const user = JSON.parse(localStorage.getItem('user'))
     const [jobList, setJobList] = React.useState([])
     const [countJobList, setCountJobList] = React.useState([])
@@ -28,7 +30,9 @@ function RecruitmentPage() {
         // getMyAllJobs()
     }, [])
 
-    return <Steps />
+    return (
+        <LandingofRecruitment setLocation={setLocation} setClient={setClient} />
+    )
 }
 
 export default RecruitmentPage

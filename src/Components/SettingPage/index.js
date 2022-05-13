@@ -489,20 +489,17 @@ export default function BasicTabs() {
                                     {...a11yProps(0)}
                                     style={{ margin: '0px 10px' }}
                                 />
-                                {user.role.isAdmin && (
-                                    <Tab
-                                        label="Employees"
-                                        {...a11yProps(1)}
-                                        style={{ margin: '0px 10px' }}
-                                    />
-                                )}
-                                {(user.role.isAdmin || user.role.isManager) && (
-                                    <Tab
-                                        label="Rates and Shift Info"
-                                        {...a11yProps(2)}
-                                        style={{ margin: '0px 10px' }}
-                                    />
-                                )}
+                                <Tab
+                                    label="Employees"
+                                    {...a11yProps(1)}
+                                    style={{ margin: '0px 10px' }}
+                                />
+
+                                <Tab
+                                    label="Rates and Shift Info"
+                                    {...a11yProps(2)}
+                                    style={{ margin: '0px 10px' }}
+                                />
                                 <Tab
                                     label="Accounts"
                                     {...a11yProps(3)}
