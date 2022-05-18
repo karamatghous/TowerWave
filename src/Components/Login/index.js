@@ -54,6 +54,7 @@ function LoginForm() {
             navigate('/dashboard')
         }
     }, [])
+    console.log('login success')
 
     const signInForm = (event) => {
         setError(false)
