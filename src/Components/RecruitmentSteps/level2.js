@@ -4,81 +4,199 @@ import moment from 'moment'
 import { useForm, Controller } from 'react-hook-form'
 import JobPageStyles from './style'
 import { axiosClient, httpOptions } from '../../config'
-import { Button } from '@mui/material'
+import { Button, TextField } from '@mui/material'
+import { KeyboardDatePicker } from '@material-ui/pickers'
+import ReplayIcon from '@mui/icons-material/Replay'
+import styles from './style'
+import { useSnackbar } from 'notistack'
+import { Details } from '@mui/icons-material'
 
-function Level2({ setIndex }) {
+function Level2({ setIndex, client, location }) {
     const date = new Date()
-    const user = JSON.parse(localStorage.getItem('user'))
+    const classes = styles()
+    const user = JSON.parse(localStorage.getItem('candidate'))
     const [answer, setAnswer] = React.useState(true)
-    const [disabledAnswer, setDisabledAnswer] = React.useState(false)
+    const [disabledAnswer, setDisabledAnswer] = React.useState(true)
     const [disabledBtn, setDisabledBtn] = React.useState(false)
+    const { enqueueSnackbar } = useSnackbar()
     const [questionIndex, setQuestionIndex] = React.useState(0)
+    const [selectedDate, setSelectedDate] = React.useState(
+        new Date('2014-08-18T21:11:54')
+    )
+    const [DOB, setDOB] = React.useState(new Date('2014-08-18T21:11:54'))
+    const [zipcode, setZipcode] = React.useState('')
+    const [drivingLN, setDrivingLN] = React.useState('')
+
+    const handleDateChange = (date) => {
+        setSelectedDate(date)
+    }
+
+    const handleDOBChange = (date) => {
+        setDOB(date)
+    }
+
     const question = [
         {
             msg: '"Are you at least 25 years old?"',
             type: 'question',
             action: false,
             next: 4,
+            client: 'everyone',
         },
         {
             msg: '"Do you have a driver’s license for at least 1 year?"',
             type: 'question',
             action: true,
             next: 0,
+            client: 'everyone',
         },
         {
             msg: '"What is the issue date?"',
             type: 'text',
             action: false,
-            next: 0,
+            next: 9,
+            client: 'uber',
         },
         {
             msg: 'If less than 1 year they will need to upload previous DL or DMV licensing abstract when uploading to uber platform',
             type: 'text',
             action: false,
-            next: 100,
+            next: 9,
+            client: 'uber',
         },
         {
             msg: '"Are you at least 23 years old?"',
             type: 'question',
             action: true,
             next: 0,
+            client: 'uber',
         },
         {
             msg: '"Do you have a clean driving record with no moving violations or accidents?"',
             type: 'question',
             action: true,
             next: 0,
-        },
-        {
-            msg: 'If yes, must provide DL#, Date of Birth, and Zip Code to confirm they will pass our Insurance check – send info to Jamie.lara@towerwav.com',
-            type: 'text',
-            action: true,
-            next: 0,
+            client: 'uber',
         },
         {
             msg: '"Have you had a driver’s license for at least 3 years?"',
             type: 'question',
             action: true,
             next: 0,
+            client: 'uber',
         },
         {
             msg: '"what the issue date is on the current state license?"',
             type: 'text',
             action: false,
             next: 0,
+            client: 'uber',
         },
         {
             msg: 'If less than 1 year they will need to , upload previous DL or DMV licensing abstract when uploading to uber platform',
             type: 'text',
             action: false,
+            next: 0,
+            client: 'uber',
+        },
+        {
+            msg: 'If yes, must provide DL#, Date of Birth, and Zip Code to confirm they will pass our Insurance check – send info to Jamie.lara@towerwav.com',
+            type: 'text',
+            action: false,
             next: 100,
+            client: 'everyone',
         },
     ]
 
     React.useEffect(() => {
-        // getMyAllJobs()
-    }, [])
+        if (questionIndex === 2) {
+            if (client.value === 'lyft') setQuestionIndex(question.length - 1)
+        }
+    }, [questionIndex])
+
+    const getbuttonBackground = () => {
+        if (disabledAnswer) return '#E0E0E0'
+        else {
+            if (answer) {
+                return '#66BE6A'
+            } else return '#F44336'
+        }
+    }
+    console.log(answer, getbuttonBackground())
+
+    const setRejectUser = () => {
+        const data = {
+            id: user.id,
+            employerId: user.employerId,
+            status: 'rejected',
+            status_code: 2,
+        }
+        try {
+            axiosClient
+                .put('user/profile/update', data, httpOptions)
+                .then((response) => {
+                    if (response.status === 200) {
+                        const res = response.data.data
+                        enqueueSnackbar('Rejected Successfully', {
+                            variant: 'success',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                    } else {
+                        enqueueSnackbar('Failed Reject', {
+                            variant: 'error',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                        // setError(true)
+                    }
+                })
+        } catch (err) {
+            enqueueSnackbar('Failed Reject', {
+                variant: 'error',
+                autoHideDuration: 3000,
+                preventDuplicate: true,
+            })
+            console.log(err)
+        }
+    }
+
+    const setDLDetail = () => {
+        const data = {
+            id: user.id,
+            DLN: drivingLN,
+            DOB: DOB,
+            zip_code: zipcode,
+        }
+        try {
+            axiosClient
+                .put('user/profile/updateDLDetail', data, httpOptions)
+                .then((response) => {
+                    if (response.status === 200) {
+                        const res = response.data.data
+                        enqueueSnackbar(`Driver's Details Set Successfully`, {
+                            variant: 'success',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                    } else {
+                        enqueueSnackbar('Failed to set Driver Details', {
+                            variant: 'error',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                        // setError(true)
+                    }
+                })
+        } catch (err) {
+            enqueueSnackbar('Failed Reject', {
+                variant: 'error',
+                autoHideDuration: 3000,
+                preventDuplicate: true,
+            })
+            console.log(err)
+        }
+    }
 
     return (
         <div
@@ -106,8 +224,26 @@ function Level2({ setIndex }) {
                         >
                             Interview
                         </Typography>
+                        {!answer && (
+                            <Typography
+                                component={'span'}
+                                style={{
+                                    color: '#000000',
+                                    float: 'right',
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                <ReplayIcon
+                                    onClick={() => {
+                                        setAnswer(true)
+                                        setDisabledAnswer(true)
+                                    }}
+                                />
+                            </Typography>
+                        )}
                     </Box>
                 </Grid>
+
                 <Grid
                     container
                     direction="column"
@@ -138,6 +274,70 @@ function Level2({ setIndex }) {
                             >
                                 {question[questionIndex].msg}
                             </Typography>
+                            {(questionIndex === 2 || questionIndex === 7) && (
+                                <Typography style={{ textAlign: 'center' }}>
+                                    <KeyboardDatePicker
+                                        variant="inline"
+                                        format="MM/DD/yyyy"
+                                        margin="normal"
+                                        id="date-picker-inline"
+                                        label="issue date"
+                                        value={selectedDate}
+                                        onChange={handleDateChange}
+                                        KeyboardButtonProps={{
+                                            'aria-label': 'change date',
+                                        }}
+                                    />
+                                </Typography>
+                            )}
+                            {questionIndex === question.length - 1 && (
+                                <>
+                                    <Typography style={{ textAlign: 'center' }}>
+                                        <KeyboardDatePicker
+                                            variant="inline"
+                                            format="MM/DD/yyyy"
+                                            margin="normal"
+                                            id="date-picker-inline"
+                                            label="Date of Birth"
+                                            value={DOB}
+                                            onChange={handleDOBChange}
+                                            KeyboardButtonProps={{
+                                                'aria-label': 'change date',
+                                            }}
+                                        />
+                                    </Typography>
+                                    <Typography style={{ textAlign: 'center' }}>
+                                        <TextField
+                                            value={drivingLN}
+                                            variant="standard"
+                                            placeholder="Driver's License#"
+                                            classes={classes.textField}
+                                            onChange={(event) => {
+                                                setDrivingLN(event.target.value)
+                                            }}
+                                            style={{
+                                                minWidth: '223px',
+                                                marginBottom: '10px',
+                                            }}
+                                        />
+                                    </Typography>
+                                    <Typography style={{ textAlign: 'center' }}>
+                                        <TextField
+                                            value={zipcode}
+                                            variant="standard"
+                                            placeholder="Zipcode"
+                                            classes={classes.textField}
+                                            onChange={(event) => {
+                                                setZipcode(event.target.value)
+                                            }}
+                                            style={{
+                                                minWidth: '223px',
+                                                marginBottom: '10px',
+                                            }}
+                                        />
+                                    </Typography>
+                                </>
+                            )}
 
                             <Typography style={{ textAlign: 'center' }}>
                                 {question[questionIndex].type ===
@@ -165,7 +365,9 @@ function Level2({ setIndex }) {
                                                 return
                                             }
                                             setAnswer(false)
+                                            setDisabledAnswer(false)
                                         }}
+                                        disabled={!disabledAnswer}
                                     >
                                         No
                                     </Button>
@@ -186,10 +388,24 @@ function Level2({ setIndex }) {
                                     onClick={() => {
                                         if (
                                             question[questionIndex].next !== 100
-                                        )
-                                            setQuestionIndex(questionIndex + 1)
-                                        else setAnswer(true)
+                                        ) {
+                                            if (
+                                                question[questionIndex].next > 4
+                                            ) {
+                                                setQuestionIndex(
+                                                    question[questionIndex].next
+                                                )
+                                                return
+                                            } else
+                                                setQuestionIndex(
+                                                    questionIndex + 1
+                                                )
+                                        } else {
+                                            setDisabledAnswer(false)
+                                            setAnswer(true)
+                                        }
                                     }}
+                                    disabled={!disabledAnswer}
                                 >
                                     {question[questionIndex].type === 'question'
                                         ? 'Yes'
@@ -198,6 +414,7 @@ function Level2({ setIndex }) {
                             </Typography>
                         </Box>
                     </Grid>
+
                     <Grid
                         container
                         direction="row"
@@ -227,7 +444,7 @@ function Level2({ setIndex }) {
                         <Grid item xs={'auto'}>
                             <Button
                                 variant="contained"
-                                color={answer ? 'success' : 'error'}
+                                color="error"
                                 style={{
                                     fontSize: '14px',
                                     padding: '5px 0px',
@@ -235,9 +452,16 @@ function Level2({ setIndex }) {
                                     minWidth: 80,
                                     fontWeight: 'bold',
                                     borderRadius: '9px',
+                                    color: '#000000DE',
+                                    backgroundColor: getbuttonBackground(),
                                 }}
                                 onClick={() => {
-                                    setIndex(3)
+                                    if (answer) {
+                                        setDLDetail()
+                                        setIndex(3)
+                                    } else {
+                                        setRejectUser()
+                                    }
                                 }}
                                 disabled={disabledAnswer}
                             >

@@ -30,7 +30,7 @@ function EditLocationInfoForm({ open, handleClose, row }) {
             state: row.state,
             state_code: row.state_code,
             hourly_rate: formInputs.rate,
-            signin_bonas: formInputs.bonuses,
+            signin_bonas: formInputs.bonas,
             shift_detail: formInputs.description,
         }
         axiosClient
@@ -205,7 +205,7 @@ function EditLocationInfoForm({ open, handleClose, row }) {
                                     className={classes.textFieldContainer}
                                 >
                                     <Typography className={classes.labelText}>
-                                        Signin Bonas
+                                        Signin Bonus
                                     </Typography>
 
                                     <Controller
@@ -218,14 +218,14 @@ function EditLocationInfoForm({ open, handleClose, row }) {
                                             <TextField
                                                 value={value}
                                                 variant="outlined"
-                                                placeholder="Signin Bonas"
+                                                placeholder="Signin Bonus"
                                                 fullWidth={true}
                                                 type="number"
                                                 error={!!errors.rate}
                                                 classes={classes.textField}
                                                 helperText={
                                                     errors.rate &&
-                                                    'Signin Bonas Name required'
+                                                    'Signin Bonus Name required'
                                                 }
                                                 onChange={(event) => {
                                                     onChange(event.target.value)

@@ -4,30 +4,42 @@ import moment from 'moment'
 import { useForm, Controller } from 'react-hook-form'
 import JobPageStyles from './style'
 import { axiosClient, httpOptions } from '../../config'
-import { Button } from '@mui/material'
+import { Autocomplete, Button, TextField } from '@mui/material'
+import { useSnackbar } from 'notistack'
+import { useNavigate } from 'react-router-dom'
 
-function Level2({ setIndex }) {
+function Level2({ setIndex, location, client }) {
     const date = new Date()
-    const user = JSON.parse(localStorage.getItem('user'))
+    const user = JSON.parse(localStorage.getItem('candidate'))
     const [answer, setAnswer] = React.useState(true)
-    const [disabledAnswer, setDisabledAnswer] = React.useState(false)
+    const [disabledAnswer, setDisabledAnswer] = React.useState(true)
     const [disabledBtn, setDisabledBtn] = React.useState(false)
     const [questionIndex, setQuestionIndex] = React.useState(0)
+    const [shift, setShift] = React.useState({})
+    const [type, setType] = React.useState('')
+    const { enqueueSnackbar } = useSnackbar()
+    const navigate = useNavigate()
     const question = [
         {
-            msg: '"Although marijuana is legal in many states, we operate under a State TCP license and all drivers must pass a drug test.   Are you okay with taking and passing a drug test?"',
+            msg: '"Although marijuana is legal in many states, we operate under a State TCP license and all drivers must pass a drug test. Are you okay with taking and passing a drug test?"',
             type: 'question',
             action: true,
-            next: 4,
+            next: 0,
         },
         {
-            msg: 'As a driver you will be responsible for providing transportation service using the Uber app.   We will provide you with a car, gasoline, insurance, training, and certification, so no out of pocket costs to you, and you will be paid as an employee at a base rate of $____ per hour plus tips, whether or not you get any rides.  Depending on the shift you choose, you may get additional pay per hour.  In addition, you will be eligible to participate in weekly performance bonuses.',
+            msg: '"Continue Interview ?"',
+            type: 'question',
+            action: true,
+            next: 0,
+        },
+        {
+            msg: `As a driver you will be responsible for providing transportation service using the ${client.label} app. We will provide you with a car, gasoline, insurance, training, and certification, so no out of pocket costs to you, and you will be paid as an employee at a base rate of $${location.hourly_rate} per hour plus tips, whether or not you get any rides.  Depending on the shift you choose, you may get additional pay per hour.  In addition, you will be eligible to participate in weekly performance bonuses.`,
             type: 'text',
             action: false,
             next: 0,
         },
         {
-            msg: 'You will have access to healthcare after 90 days of employment. Right now we are also offering a $___ sign-on bonus paid after 6 weeks of employment. "',
+            msg: `You will have access to healthcare after 90 days of employment. Right now we are also offering a $${location.signin_bonas} sign-on bonus paid after 6 weeks of employment.`,
             type: 'text',
             action: false,
             next: 0,
@@ -36,7 +48,7 @@ function Level2({ setIndex }) {
             msg: 'We are running 8-to-10-hour shifts. However, you can also work part-time, and we can be flexible with your time.',
             type: 'text',
             action: false,
-            next: 100,
+            next: 0,
         },
         {
             msg: '"Does this sound like a position you would be interested in?"',
@@ -45,7 +57,7 @@ function Level2({ setIndex }) {
             next: 0,
         },
         {
-            msg: '"Were you ever an Uber Driver?"',
+            msg: `"Were you ever an ${client.label} Driver?"`,
             type: 'question',
             action: false,
             next: 0,
@@ -54,16 +66,28 @@ function Level2({ setIndex }) {
             msg: '"Were you Deactivated?"',
             type: 'question',
             action: true,
-            next: 0,
+            next: 8,
         },
         {
-            msg: '"what the issue date is on the current state license?"',
-            type: 'text',
+            msg: '"Are you OK working with people in wheelchairs?"',
+            type: 'question',
             action: false,
             next: 0,
         },
         {
-            msg: 'If less than 1 year they will need to , upload previous DL or DMV licensing abstract when uploading to uber platform',
+            msg: '"Can you lift up to 40lbs, as you may need to move luggage or packages?"',
+            type: 'question',
+            action: false,
+            next: 0,
+        },
+        {
+            msg: 'Are you interested in working Full Time or Part Time?"',
+            type: 'question',
+            action: false,
+            next: 0,
+        },
+        {
+            msg: '"What shifts are you looking to work?"',
             type: 'text',
             action: false,
             next: 100,
@@ -73,6 +97,146 @@ function Level2({ setIndex }) {
     React.useEffect(() => {
         // getMyAllJobs()
     }, [])
+
+    const getbuttonBackground = () => {
+        if (disabledAnswer) return '#E0E0E0'
+        else {
+            if (answer) {
+                return '#66BE6A'
+            } else return '#F44336'
+        }
+    }
+
+    const currencies = [
+        {
+            value: 'Day Shift',
+            label: 'Day Shift',
+        },
+        {
+            value: 'Afternoon/Evening Shift',
+            label: 'Afternoon/Evening Shift',
+        },
+        {
+            value: 'Overnight Shift (where applicable)',
+            label: 'Overnight Shift (where applicable)',
+        },
+        {
+            value: 'Weekend Shift',
+            label: 'Weekend Shift',
+        },
+    ]
+
+    console.log(type, shift)
+
+    const setDLDetail = () => {
+        const data = {
+            id: user.id,
+            candidate_type: type,
+            shift: shift ? shift.value : '',
+        }
+        try {
+            axiosClient
+                .put('user/profile/updateTypeShift', data, httpOptions)
+                .then((response) => {
+                    if (response.status === 200) {
+                        const res = response.data.data
+                        enqueueSnackbar(`Driver's Details Set Successfully`, {
+                            variant: 'success',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                    } else {
+                        enqueueSnackbar('Failed to set Driver Details', {
+                            variant: 'error',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                        // setError(true)
+                    }
+                })
+        } catch (err) {
+            enqueueSnackbar('Failed Reject', {
+                variant: 'error',
+                autoHideDuration: 3000,
+                preventDuplicate: true,
+            })
+            console.log(err)
+        }
+    }
+
+    const setRejectUser = () => {
+        const data = {
+            id: user.id,
+            employerId: user.employerId,
+            status: 'rejected',
+            status_code: 2,
+        }
+        try {
+            axiosClient
+                .put('user/profile/update', data, httpOptions)
+                .then((response) => {
+                    if (response.status === 200) {
+                        const res = response.data.data
+                        enqueueSnackbar('Rejected Successfully', {
+                            variant: 'success',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                    } else {
+                        enqueueSnackbar('Failed Reject', {
+                            variant: 'error',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                        // setError(true)
+                    }
+                })
+        } catch (err) {
+            enqueueSnackbar('Failed Reject', {
+                variant: 'error',
+                autoHideDuration: 3000,
+                preventDuplicate: true,
+            })
+            console.log(err)
+        }
+    }
+
+    const setPassUser = () => {
+        const data = {
+            id: user.id,
+            employerId: user.employerId,
+            status: 'Waitlisted',
+            status_code: 3,
+        }
+        try {
+            axiosClient
+                .put('user/profile/update', data, httpOptions)
+                .then((response) => {
+                    if (response.status === 200) {
+                        const res = response.data.data
+                        enqueueSnackbar('Waitlisted Successfully', {
+                            variant: 'success',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                    } else {
+                        enqueueSnackbar('Waitlisted Reject', {
+                            variant: 'error',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                        // setError(true)
+                    }
+                })
+        } catch (err) {
+            enqueueSnackbar('Failed Reject', {
+                variant: 'error',
+                autoHideDuration: 3000,
+                preventDuplicate: true,
+            })
+            console.log(err)
+        }
+    }
 
     return (
         <div
@@ -132,6 +296,49 @@ function Level2({ setIndex }) {
                             >
                                 {question[questionIndex].msg}
                             </Typography>
+                            {questionIndex === question.length - 1 && (
+                                <Grid
+                                    container
+                                    direction="row"
+                                    justifyContent="center"
+                                    alignItems="center"
+                                >
+                                    <Box style={{ width: '350px' }}>
+                                        <Autocomplete
+                                            onChange={(event, data) => {
+                                                setShift(data)
+                                            }}
+                                            options={currencies}
+                                            getOptionLabel={(option) =>
+                                                option.label
+                                            }
+                                            getOptionSelected={(
+                                                option,
+                                                value
+                                            ) =>
+                                                value === undefined ||
+                                                value === '' ||
+                                                option.label === value.label
+                                            }
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    margin="normal"
+                                                    variant="outlined"
+                                                    placeholder="Select a Shift"
+                                                    style={{
+                                                        color: 'white',
+                                                        backgroundColor:
+                                                            'white',
+                                                        fontFamily: 'Poppins',
+                                                        borderRadius: '9px',
+                                                    }}
+                                                />
+                                            )}
+                                        />
+                                    </Box>
+                                </Grid>
+                            )}
 
                             <Typography style={{ textAlign: 'center' }}>
                                 {question[questionIndex].type ===
@@ -139,7 +346,7 @@ function Level2({ setIndex }) {
                                     <Button
                                         style={{
                                             fontSize: '14px',
-                                            padding: '5px 0px',
+                                            padding: '5px 10px',
                                             textAlign: 'center',
                                             minWidth: 80,
                                             fontWeight: 'bold',
@@ -150,6 +357,18 @@ function Level2({ setIndex }) {
                                         variant={'outlined'}
                                         color={'error'}
                                         onClick={() => {
+                                            questionIndex === 10 &&
+                                                setType(`Part Time`)
+                                            if (
+                                                questionIndex === 7 ||
+                                                questionIndex === 6 ||
+                                                !question[questionIndex].status
+                                            ) {
+                                                setQuestionIndex(
+                                                    questionIndex + 1
+                                                )
+                                                return
+                                            }
                                             if (
                                                 question[questionIndex].next > 0
                                             ) {
@@ -159,15 +378,22 @@ function Level2({ setIndex }) {
                                                 return
                                             }
                                             setAnswer(false)
+                                            setDisabledAnswer(false)
                                         }}
                                     >
-                                        No
+                                        {questionIndex === 10
+                                            ? `Part Time`
+                                            : `No`}
                                     </Button>
+                                )}
+                                {console.log(
+                                    question[questionIndex],
+                                    questionIndex
                                 )}
                                 <Button
                                     style={{
                                         fontSize: '14px',
-                                        padding: '5px 0px',
+                                        padding: '5px 10px',
                                         textAlign: 'center',
                                         minWidth: 80,
                                         fontWeight: 'bold',
@@ -178,14 +404,25 @@ function Level2({ setIndex }) {
                                     variant={'outlined'}
                                     color={'success'}
                                     onClick={() => {
-                                        if (
+                                        questionIndex === 10 &&
+                                            setType(`Full Time`)
+                                        if (questionIndex === 7) {
+                                            setAnswer(false)
+                                            setDisabledAnswer(false)
+                                        } else if (
                                             question[questionIndex].next !== 100
                                         )
                                             setQuestionIndex(questionIndex + 1)
-                                        else setAnswer(true)
+                                        else {
+                                            setAnswer(true)
+                                            setDisabledAnswer(false)
+                                        }
                                     }}
                                 >
-                                    {question[questionIndex].type === 'question'
+                                    {questionIndex === 10
+                                        ? `Full Time`
+                                        : question[questionIndex].type ===
+                                          'question'
                                         ? 'Yes'
                                         : 'Next'}
                                 </Button>
@@ -221,7 +458,7 @@ function Level2({ setIndex }) {
                         <Grid item xs={'auto'}>
                             <Button
                                 variant="contained"
-                                color={answer ? 'success' : 'error'}
+                                color="error"
                                 style={{
                                     fontSize: '14px',
                                     padding: '5px 0px',
@@ -229,9 +466,17 @@ function Level2({ setIndex }) {
                                     minWidth: 80,
                                     fontWeight: 'bold',
                                     borderRadius: '9px',
+                                    color: '#000000DE',
+                                    backgroundColor: getbuttonBackground(),
                                 }}
                                 onClick={() => {
-                                    setIndex(3)
+                                    if (answer) {
+                                        setDLDetail()
+                                        navigate('/dashboard')
+                                    } else {
+                                        setRejectUser()
+                                        navigate('/dashboard')
+                                    }
                                 }}
                                 disabled={disabledAnswer}
                             >

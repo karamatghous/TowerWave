@@ -148,7 +148,7 @@ export default function PrimarySearchAppBar() {
                     justifyContent="flex-start"
                     alignItems="center"
                 >
-                    <Grid item xs={1}>
+                    <Grid item xs={1} md={2}>
                         <Typography
                             variant="h6"
                             noWrap
@@ -160,7 +160,7 @@ export default function PrimarySearchAppBar() {
                         </Typography>
                     </Grid>
                     {user && (
-                        <Grid item xs={10} justifyContent="flex-start">
+                        <Grid item xs={10} md={9} justifyContent="flex-start">
                             <Typography
                                 variant="h6"
                                 noWrap

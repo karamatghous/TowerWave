@@ -14,16 +14,14 @@ import JobPageStyles from './style'
 import { axiosClient, httpOptions } from '../../config'
 import { Button } from '@mui/material'
 
-function Level1({ setIndex }) {
+function Level1({ setIndex, location, client }) {
     const date = new Date()
     const formatedDate = moment(date).format('MMMM DD, YYYY')
-    const client = localStorage.getItem('client')
     const user = JSON.parse(localStorage.getItem('user'))
-    console.log(user)
     const [jobList, setJobList] = React.useState([])
     const [countJobList, setCountJobList] = React.useState([])
     const now = moment(new Date())
-    console.log('level1')
+    console.log(location)
 
     React.useEffect(() => {
         // getMyAllJobs()
@@ -92,11 +90,11 @@ function Level1({ setIndex }) {
                                     marginTop: 20,
                                 }}
                             >
-                                We are a large transportation company servicing
+                                {`We are a large transportation company servicing
                                 people with disabilities. We have partnered with
-                                Uber to provide transportation service to
+                                ${client.label} to provide transportation service to
                                 wheelchair bound people. We are currently
-                                interviewing for drivers in “Location”.
+                                interviewing for drivers in “${location.city}”.`}
                             </Typography>
                         </Box>
                     </Grid>

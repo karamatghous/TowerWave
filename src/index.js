@@ -5,12 +5,16 @@ import App from './App'
 import reportWebVitals from './reportWebVitals'
 import { RecoilRoot } from 'recoil'
 import { SnackbarProvider } from 'notistack'
+import MomentUtils from '@date-io/moment'
+import { MuiPickersUtilsProvider } from '@material-ui/pickers'
 
 ReactDOM.render(
     <SnackbarProvider maxSnack={3}>
         <RecoilRoot>
             <React.StrictMode>
-                <App />
+                <MuiPickersUtilsProvider utils={MomentUtils}>
+                    <App />
+                </MuiPickersUtilsProvider>
             </React.StrictMode>
         </RecoilRoot>
     </SnackbarProvider>,

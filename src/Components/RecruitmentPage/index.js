@@ -24,14 +24,27 @@ function RecruitmentPage() {
     const user = JSON.parse(localStorage.getItem('user'))
     const [jobList, setJobList] = React.useState([])
     const [countJobList, setCountJobList] = React.useState([])
+    const [showInterview, setShowInterview] = React.useState(false)
     const now = moment(new Date())
 
     React.useEffect(() => {
-        // getMyAllJobs()
-    }, [])
+        if (client && Object.entries(location).length !== 0) {
+            setShowInterview(true)
+        }
+    }, [location])
 
     return (
-        <LandingofRecruitment setLocation={setLocation} setClient={setClient} />
+        <>
+            {!showInterview && (
+                <LandingofRecruitment
+                    setLocation={setLocation}
+                    setClient={setClient}
+                    client={client}
+                    location={location}
+                />
+            )}
+            {showInterview && <Steps client={client} location={location} />}
+        </>
     )
 }
 

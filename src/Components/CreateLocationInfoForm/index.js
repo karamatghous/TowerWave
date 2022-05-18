@@ -273,7 +273,7 @@ function CreateJobForm({ open, handleClose }) {
                                     className={classes.textFieldContainer}
                                 >
                                     <Typography className={classes.labelText}>
-                                        Signin Bonas
+                                        Signin Bonus
                                     </Typography>
 
                                     <Controller
@@ -286,14 +286,14 @@ function CreateJobForm({ open, handleClose }) {
                                             <TextField
                                                 value={value}
                                                 variant="outlined"
-                                                placeholder="Signin Bonas"
+                                                placeholder="Signin Bonus"
                                                 fullWidth={true}
                                                 type="number"
                                                 error={!!errors.rate}
                                                 classes={classes.textField}
                                                 helperText={
                                                     errors.rate &&
-                                                    'Signin Bonas Name required'
+                                                    'Signin Bonus Name required'
                                                 }
                                                 onChange={(event) => {
                                                     onChange(event.target.value)

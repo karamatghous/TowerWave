@@ -43,7 +43,7 @@ function TabPanel(props) {
         </div>
     )
 }
-
+console.log(httpOptions)
 TabPanel.propTypes = {
     children: PropTypes.node,
     index: PropTypes.number.isRequired,
@@ -115,6 +115,7 @@ export default function BasicTabs() {
             clientId: client,
             userId: user.id,
         }
+        console.log(httpOptions)
         try {
             axiosClient
                 .post('user/profile/getAllEmployees', data, httpOptions)
@@ -161,7 +162,7 @@ export default function BasicTabs() {
                                             onChange={(event, data) => {
                                                 onChange(data, row)
                                             }}
-                                            defaultValue={row.roles[0].id}
+                                            defaultValue={row.roles[0]?.id}
                                             classes={classes.textField}
                                             options={roles}
                                             value={row.roles[0]}
@@ -220,7 +221,7 @@ export default function BasicTabs() {
                                 <StyledTableCell>State</StyledTableCell>
                                 <StyledTableCell>Hourly Rate</StyledTableCell>
                                 <StyledTableCell>
-                                    Signin Bonas Rate
+                                    Signin Bonus Rate
                                 </StyledTableCell>
                                 <StyledTableCell>Shift details</StyledTableCell>
                                 <StyledTableCell>Edit</StyledTableCell>
@@ -260,8 +261,6 @@ export default function BasicTabs() {
             </Grid>
         )
     }
-
-    console.log(editLocation)
 
     const permissions = (admin, manager, recruiter) => {
         if (admin) {

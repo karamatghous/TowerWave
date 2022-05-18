@@ -17,7 +17,12 @@ import { useSetRecoilState, useRecoilState } from 'recoil'
 import { useNavigate } from 'react-router-dom'
 import { axiosClient } from '../../config'
 
-export default function LandingofRecruitment({ setLocation, setClient }) {
+export default function LandingofRecruitment({
+    setLocation,
+    location,
+    client,
+    setClient,
+}) {
     const [loading, setLoading] = React.useState(false)
     const [settingsInfo, setSettingsInfo] = React.useState([])
 
@@ -94,7 +99,7 @@ export default function LandingofRecruitment({ setLocation, setClient }) {
                                 <StyledTableCell>State</StyledTableCell>
                                 <StyledTableCell>Hourly Rate</StyledTableCell>
                                 <StyledTableCell>
-                                    Signin Bonas Rate
+                                    Signin Bonus Rate
                                 </StyledTableCell>
                                 <StyledTableCell>Shift details</StyledTableCell>
                                 <StyledTableCell>Edit</StyledTableCell>
@@ -122,7 +127,10 @@ export default function LandingofRecruitment({ setLocation, setClient }) {
                                         onClick={async () => {
                                             await setLocation(row)
                                         }}
-                                        style={{ fontWeight: 'bold' }}
+                                        style={{
+                                            fontWeight: 'bold',
+                                            cursor: 'pointer',
+                                        }}
                                     >
                                         Select
                                     </StyledTableCell>
@@ -192,37 +200,39 @@ export default function LandingofRecruitment({ setLocation, setClient }) {
                             />
                         </Box>
                     </Grid>
-                    <div
-                        style={{
-                            marginTop: 50,
-                        }}
-                    >
-                        <Grid
-                            container
-                            direction="row"
-                            justifyContent="center"
-                            alignItems="center"
+                    {client && Object.entries(client).length !== 0 && (
+                        <div
+                            style={{
+                                marginTop: 50,
+                            }}
                         >
-                            <Grid item xs={8}>
-                                <Box component={'span'}>
-                                    <Typography
-                                        component={'span'}
-                                        style={{
-                                            fontFamily: 'Poppins',
-                                            fontWeight: 'bolder',
-                                            fontSize: '33px',
-                                            color: '#000000',
-                                        }}
-                                    >
-                                        All Location Info
-                                    </Typography>
-                                </Box>{' '}
+                            <Grid
+                                container
+                                direction="row"
+                                justifyContent="center"
+                                alignItems="center"
+                            >
+                                <Grid item xs={8}>
+                                    <Box component={'span'}>
+                                        <Typography
+                                            component={'span'}
+                                            style={{
+                                                fontFamily: 'Poppins',
+                                                fontWeight: 'bolder',
+                                                fontSize: '33px',
+                                                color: '#000000',
+                                            }}
+                                        >
+                                            All Location Info
+                                        </Typography>
+                                    </Box>{' '}
+                                </Grid>
+                                <Grid xs={8} style={{ marginTop: 10 }}>
+                                    {ShiftdetailsTables()}
+                                </Grid>
                             </Grid>
-                            <Grid xs={8} style={{ marginTop: 10 }}>
-                                {ShiftdetailsTables()}
-                            </Grid>
-                        </Grid>
-                    </div>
+                        </div>
+                    )}
                 </Grid>
             </Grid>
         </div>

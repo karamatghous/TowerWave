@@ -27,6 +27,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import Loader from '../Loader'
 import { useNavigate } from 'react-router-dom'
+import { useSnackbar } from 'notistack'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -64,6 +65,7 @@ function HomePage() {
     const [cityList, setCityList] = React.useState([])
     const [stateList, setStateList] = React.useState([])
     const [notesText, setNotesText] = React.useState('')
+    const { enqueueSnackbar } = useSnackbar()
     const [filter, setFilter] = React.useState({
         city: [],
         state: [],
@@ -191,12 +193,27 @@ function HomePage() {
                 .then((response) => {
                     if (response.status === 200) {
                         const res = response.data.data
-                        setJobList(res)
+                        getMyAllJobs()
+                        enqueueSnackbar('New Notes Added Successfully', {
+                            variant: 'success',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
                     } else {
+                        enqueueSnackbar('Failed to Update Notes', {
+                            variant: 'error',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
                         // setError(true)
                     }
                 })
         } catch (err) {
+            enqueueSnackbar('Failed to Update Notes', {
+                variant: 'error',
+                autoHideDuration: 3000,
+                preventDuplicate: true,
+            })
             console.log(err)
         }
     }
@@ -245,10 +262,11 @@ function HomePage() {
                                         onClick={() => {
                                             localStorage.setItem(
                                                 'candidate',
-                                                row
+                                                JSON.stringify(row)
                                             )
                                             navigate('/recruitment')
                                         }}
+                                        style={{ cursor: 'pointer' }}
                                     >
                                         {row.first_name}
                                     </StyledTableCell>
@@ -263,14 +281,13 @@ function HomePage() {
                                     <StyledTableCell>
                                         {row.status}
                                     </StyledTableCell>
-                                    <StyledTableCell>
-                                        <span
-                                            onClick={() => {
-                                                handleOpen(row)
-                                            }}
-                                        >
-                                            {row.notes}
-                                        </span>
+                                    <StyledTableCell
+                                        onClick={() => {
+                                            handleOpen(row)
+                                        }}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        <span>{row.notes}</span>
                                     </StyledTableCell>
                                 </StyledTableRow>
                             ))}
@@ -431,7 +448,6 @@ function HomePage() {
                 <DialogTitle sx={{ padding: 0 }}>Add noted Here</DialogTitle>
                 <TextField
                     id="outlined-multiline-static"
-                    label="Notes"
                     multiline
                     rows={4}
                     variant={'outlined'}
@@ -447,7 +463,7 @@ function HomePage() {
                         style={{
                             background: '#3f50b5',
                             color: '#FFFFFF',
-                            marginLeft: '10px',
+                            margin: '10px',
                             textTransform: 'capitalize',
                             float: 'right',
                         }}
