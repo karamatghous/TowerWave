@@ -33,6 +33,7 @@ import { Autocomplete } from '@mui/material'
 import { City, State } from 'country-state-city'
 import { uniqBy } from 'lodash'
 import { useSnackbar } from 'notistack'
+import Loader from '../Loader'
 
 function createData(name, calories, fat, carbs, protein) {
     return {
@@ -242,6 +243,7 @@ export default function EnhancedTable() {
     const classes = CadidatePageStyle
     const [cityList, setCityList] = React.useState([])
     const [stateList, setStateList] = React.useState([])
+    const user = JSON.parse(localStorage.getItem('user'))
     const [filter, setFilter] = React.useState({
         city: [],
         state: [],
@@ -389,7 +391,8 @@ export default function EnhancedTable() {
                 .then((response) => {
                     if (response.status === 200) {
                         const res = response.data.data
-                        setUsers(res)
+                        const filterUsers = res.filter((u) => u.id === user.id)
+                        setUsers(user.role.isEmployee ? filterUsers : res)
                     } else {
                         // setError(true)
                     }
@@ -479,6 +482,7 @@ export default function EnhancedTable() {
 
     return (
         <Box sx={{ width: '100%', padding: '0px' }}>
+            <Loader loading={loading} />
             <div
                 style={{
                     padding: '0px 5%',

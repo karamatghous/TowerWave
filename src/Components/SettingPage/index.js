@@ -485,21 +485,24 @@ export default function BasicTabs() {
                                     style={{ margin: '0px 10px' }}
                                 />
                                 <Tab
-                                    label="Employees"
+                                    label="Accounts"
                                     {...a11yProps(1)}
                                     style={{ margin: '0px 10px' }}
                                 />
-
-                                <Tab
-                                    label="Rates and Shift Info"
-                                    {...a11yProps(2)}
-                                    style={{ margin: '0px 10px' }}
-                                />
-                                <Tab
-                                    label="Accounts"
-                                    {...a11yProps(3)}
-                                    style={{ margin: '0px 10px' }}
-                                />
+                                {(user.role.isManager || user.role.isAdmin) && (
+                                    <Tab
+                                        label="Rates and Shift Info"
+                                        {...a11yProps(2)}
+                                        style={{ margin: '0px 10px' }}
+                                    />
+                                )}
+                                {user.role.isAdmin && (
+                                    <Tab
+                                        label="Employees"
+                                        {...a11yProps(3)}
+                                        style={{ margin: '0px 10px' }}
+                                    />
+                                )}
                             </Tabs>
                         </Box>
                         <TabPanel value={value} index={0}>
@@ -536,104 +539,6 @@ export default function BasicTabs() {
                             </div>
                         </TabPanel>
                         <TabPanel value={value} index={1}>
-                            <div
-                                style={{
-                                    marginTop: 50,
-                                }}
-                            >
-                                <Grid
-                                    container
-                                    direction="row"
-                                    justifyContent="center"
-                                    alignItems="center"
-                                >
-                                    <Grid item xs={12}>
-                                        <Box component={'span'}>
-                                            <Typography
-                                                component={'span'}
-                                                style={{
-                                                    fontFamily: 'Poppins',
-                                                    fontWeight: 'bolder',
-                                                    fontSize: '33px',
-                                                    color: '#000000',
-                                                }}
-                                            >
-                                                All Employees
-                                            </Typography>
-                                        </Box>
-                                    </Grid>
-                                </Grid>
-                                <Grid container style={{ marginTop: 10 }}>
-                                    {CustomizedTables()}
-                                </Grid>
-                            </div>
-                        </TabPanel>
-                        <TabPanel value={value} index={2}>
-                            <div
-                                style={{
-                                    marginTop: 50,
-                                }}
-                            >
-                                <CreateLocationInfoForm
-                                    open={open}
-                                    handleClose={() => setOpen(false)}
-                                />
-                                <EditLocationInfoForm
-                                    open={editOpen}
-                                    row={editLocation}
-                                    handleClose={() => setEditOpen(false)}
-                                />
-
-                                <Grid
-                                    container
-                                    direction="row"
-                                    justifyContent="space-between"
-                                    alignItems="flex-end"
-                                >
-                                    <Box component={'span'}>
-                                        <Typography
-                                            component={'span'}
-                                            style={{
-                                                fontFamily: 'Poppins',
-                                                fontWeight: 'bolder',
-                                                fontSize: '33px',
-                                                color: '#000000',
-                                            }}
-                                        >
-                                            All Location Info
-                                        </Typography>
-                                    </Box>
-                                    <Grid item>
-                                        <Box
-                                            style={{
-                                                display: 'flex',
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                            }}
-                                        >
-                                            <Box
-                                                style={{
-                                                    backgroundColor: '#3f50b5',
-                                                    borderRadius: '9px',
-                                                    padding: 5,
-                                                }}
-                                            >
-                                                <AddIcon
-                                                    style={{ color: 'white' }}
-                                                    onClick={() =>
-                                                        setOpen(true)
-                                                    }
-                                                />
-                                            </Box>
-                                        </Box>
-                                    </Grid>
-                                </Grid>
-                                <Grid container style={{ marginTop: 10 }}>
-                                    {ShiftdetailsTables()}
-                                </Grid>
-                            </div>
-                        </TabPanel>
-                        <TabPanel value={value} index={3}>
                             <div
                                 style={{
                                     marginTop: 50,
@@ -759,6 +664,104 @@ export default function BasicTabs() {
                                     container
                                     style={{ marginTop: 10 }}
                                 ></Grid>
+                            </div>
+                        </TabPanel>
+                        <TabPanel value={value} index={2}>
+                            <div
+                                style={{
+                                    marginTop: 50,
+                                }}
+                            >
+                                <CreateLocationInfoForm
+                                    open={open}
+                                    handleClose={() => setOpen(false)}
+                                />
+                                <EditLocationInfoForm
+                                    open={editOpen}
+                                    row={editLocation}
+                                    handleClose={() => setEditOpen(false)}
+                                />
+
+                                <Grid
+                                    container
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    alignItems="flex-end"
+                                >
+                                    <Box component={'span'}>
+                                        <Typography
+                                            component={'span'}
+                                            style={{
+                                                fontFamily: 'Poppins',
+                                                fontWeight: 'bolder',
+                                                fontSize: '33px',
+                                                color: '#000000',
+                                            }}
+                                        >
+                                            All Location Info
+                                        </Typography>
+                                    </Box>
+                                    <Grid item>
+                                        <Box
+                                            style={{
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                            }}
+                                        >
+                                            <Box
+                                                style={{
+                                                    backgroundColor: '#3f50b5',
+                                                    borderRadius: '9px',
+                                                    padding: 5,
+                                                }}
+                                            >
+                                                <AddIcon
+                                                    style={{ color: 'white' }}
+                                                    onClick={() =>
+                                                        setOpen(true)
+                                                    }
+                                                />
+                                            </Box>
+                                        </Box>
+                                    </Grid>
+                                </Grid>
+                                <Grid container style={{ marginTop: 10 }}>
+                                    {ShiftdetailsTables()}
+                                </Grid>
+                            </div>
+                        </TabPanel>
+                        <TabPanel value={value} index={3}>
+                            <div
+                                style={{
+                                    marginTop: 50,
+                                }}
+                            >
+                                <Grid
+                                    container
+                                    direction="row"
+                                    justifyContent="center"
+                                    alignItems="center"
+                                >
+                                    <Grid item xs={12}>
+                                        <Box component={'span'}>
+                                            <Typography
+                                                component={'span'}
+                                                style={{
+                                                    fontFamily: 'Poppins',
+                                                    fontWeight: 'bolder',
+                                                    fontSize: '33px',
+                                                    color: '#000000',
+                                                }}
+                                            >
+                                                All Employees
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
+                                </Grid>
+                                <Grid container style={{ marginTop: 10 }}>
+                                    {CustomizedTables()}
+                                </Grid>
                             </div>
                         </TabPanel>
                     </Box>

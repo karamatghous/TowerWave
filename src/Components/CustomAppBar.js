@@ -9,8 +9,6 @@ import InputBase from '@mui/material/InputBase'
 import Badge from '@mui/material/Badge'
 import MenuItem from '@mui/material/MenuItem'
 import Menu from '@mui/material/Menu'
-import AccountCircle from '@mui/icons-material/AccountCircle'
-import MailIcon from '@mui/icons-material/Mail'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import LogoutIcon from '@mui/icons-material/Logout'
 import { Grid } from '@material-ui/core'
@@ -63,7 +61,14 @@ export default function PrimarySearchAppBar() {
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl)
     const client = localStorage.getItem('client')
     const navigate = useNavigate()
-    const user = JSON.parse(localStorage.getItem('user'))
+    const [user, setUser] = React.useState(
+        JSON.parse(localStorage.getItem('user'))
+    )
+
+    React.useEffect(() => {
+        console.log(JSON.parse(localStorage.getItem('user')))
+        setUser(JSON.parse(localStorage.getItem('user')))
+    }, [])
 
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget)
@@ -159,7 +164,7 @@ export default function PrimarySearchAppBar() {
                             {client ? client : 'HRDSP'}
                         </Typography>
                     </Grid>
-                    {user && (
+                    {JSON.parse(localStorage.getItem('user')) && (
                         <Grid item xs justifyContent="flex:end">
                             <Typography
                                 variant="h6"
@@ -179,7 +184,7 @@ export default function PrimarySearchAppBar() {
                             >
                                 Candidates
                             </Typography>
-                            {user.isManager && (
+                            {user.role.isManager && (
                                 <Typography
                                     variant="h6"
                                     noWrap
@@ -216,7 +221,7 @@ export default function PrimarySearchAppBar() {
                             </Typography>
                         </Grid>
                     )}
-                    {user && (
+                    {JSON.parse(localStorage.getItem('user')) && (
                         <Grid item xs={1} style={{ float: 'right' }}>
                             <Box sx={{ display: { md: 'flex' } }}>
                                 <IconButton

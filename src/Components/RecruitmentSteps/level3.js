@@ -40,7 +40,7 @@ function Level2({ setIndex, location, client }) {
             next: 0,
         },
         {
-            msg: `You will have access to healthcare after 90 days of employment. Right now we are also offering a $${location.signin_bonas} sign-on bonus paid after 6 weeks of employment.`,
+            msg: `You will have access to healthcare after 90 days of employment. Right now we are also offering a $${location.signin_bonas} sign-on bonus paid after 90 days of employment.`,
             type: 'text',
             action: false,
             next: 0,

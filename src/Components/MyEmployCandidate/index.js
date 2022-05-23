@@ -381,7 +381,6 @@ function HomePage() {
                         onChange={(event, user) => {
                             setUser(user)
                         }}
-                        value={user}
                         classes={classes.textField}
                         options={users}
                         getOptionLabel={(option) => option.name}
