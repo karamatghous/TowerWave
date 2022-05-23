@@ -26,6 +26,7 @@ import { Country, State, City } from 'country-state-city'
 import CadidateFormStyles from './style'
 import { axiosClient, httpOptions } from '../../config'
 import { useSnackbar } from 'notistack'
+import Loader from '../Loader'
 
 function CadidateForm({ open, handleClose }) {
     const [cityList, setCityList] = React.useState([])
@@ -36,8 +37,10 @@ function CadidateForm({ open, handleClose }) {
     const [jobList, setJobList] = React.useState([])
     const source = 'Admin panel'
     const { enqueueSnackbar } = useSnackbar()
+    const [loading, setLoading] = React.useState(false)
     const referral = user.name
     const onSubmit = (formInputs) => {
+        setLoading(true)
         // event.preventDefault();
         const data = {
             jobId: formInputs.job.id,
@@ -51,11 +54,11 @@ function CadidateForm({ open, handleClose }) {
             status: 'applied',
             status_code: 0,
         }
-        console.log(data)
         axiosClient
             .post('user/profile/create', data, httpOptions)
             .then((response) => {
                 if (response.status === 200) {
+                    setLoading(false)
                     reset()
                     enqueueSnackbar('New Candidate Added Successfully', {
                         variant: 'success',
@@ -63,6 +66,7 @@ function CadidateForm({ open, handleClose }) {
                         preventDuplicate: true,
                     })
                 } else {
+                    setLoading(false)
                     enqueueSnackbar('Failed to Add New Candidate', {
                         variant: 'error',
                         autoHideDuration: 3000,
@@ -71,7 +75,7 @@ function CadidateForm({ open, handleClose }) {
                 }
             })
             .catch((error) => {
-                console.log(error.response)
+                setLoading(false)
                 enqueueSnackbar('Failed to Add New Candidate', {
                     variant: 'error',
                     autoHideDuration: 3000,
@@ -81,6 +85,7 @@ function CadidateForm({ open, handleClose }) {
     }
 
     const getAllJobs = () => {
+        setLoading(true)
         const data = {
             clientId: client,
         }
@@ -89,13 +94,16 @@ function CadidateForm({ open, handleClose }) {
                 .post('jobs/list/getAll', data, httpOptions)
                 .then((response) => {
                     if (response.status === 200) {
+                        setLoading(false)
                         const res = response.data.data
                         setJobList(res)
                     } else {
+                        setLoading(false)
                         // setError(true)
                     }
                 })
         } catch (err) {
+            setLoading(false)
             console.log(err)
         }
     }
@@ -118,6 +126,7 @@ function CadidateForm({ open, handleClose }) {
 
     return (
         <Grid>
+            <Loader loading={loading} />
             <Dialog
                 fullWidth={true}
                 maxWidth={'sm'}

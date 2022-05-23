@@ -7,6 +7,7 @@ import { axiosClient, httpOptions } from '../../config'
 import { Autocomplete, Button, TextField } from '@mui/material'
 import { useSnackbar } from 'notistack'
 import { useNavigate } from 'react-router-dom'
+import ReplayIcon from '@mui/icons-material/Replay'
 
 function Level2({ setIndex, location, client }) {
     const date = new Date()
@@ -264,6 +265,23 @@ function Level2({ setIndex, location, client }) {
                         >
                             Interview
                         </Typography>
+                        {!answer && (
+                            <Typography
+                                component={'span'}
+                                style={{
+                                    color: '#000000',
+                                    float: 'right',
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                <ReplayIcon
+                                    onClick={() => {
+                                        setAnswer(true)
+                                        setDisabledAnswer(true)
+                                    }}
+                                />
+                            </Typography>
+                        )}
                     </Box>
                 </Grid>
                 <Grid
@@ -472,6 +490,7 @@ function Level2({ setIndex, location, client }) {
                                 onClick={() => {
                                     if (answer) {
                                         setDLDetail()
+                                        setPassUser()
                                         navigate('/dashboard')
                                     } else {
                                         setRejectUser()

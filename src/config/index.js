@@ -2,7 +2,7 @@ import axios from 'axios'
 import React from 'react'
 
 export const axiosClient = axios.create({
-    baseURL: 'http://localhost:8001/api/',
+    baseURL: 'https://hrdsp.herokuapp.com/api/',
 })
 
 const token = localStorage.getItem('token')

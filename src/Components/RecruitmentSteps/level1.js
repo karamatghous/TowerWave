@@ -15,13 +15,7 @@ import { axiosClient, httpOptions } from '../../config'
 import { Button } from '@mui/material'
 
 function Level1({ setIndex, location, client }) {
-    const date = new Date()
-    const formatedDate = moment(date).format('MMMM DD, YYYY')
     const user = JSON.parse(localStorage.getItem('user'))
-    const [jobList, setJobList] = React.useState([])
-    const [countJobList, setCountJobList] = React.useState([])
-    const now = moment(new Date())
-    console.log(location)
 
     React.useEffect(() => {
         // getMyAllJobs()

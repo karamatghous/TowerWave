@@ -148,7 +148,7 @@ export default function PrimarySearchAppBar() {
                     justifyContent="flex-start"
                     alignItems="center"
                 >
-                    <Grid item xs={1} md={2}>
+                    <Grid item xs={'auto'}>
                         <Typography
                             variant="h6"
                             noWrap
@@ -160,7 +160,7 @@ export default function PrimarySearchAppBar() {
                         </Typography>
                     </Grid>
                     {user && (
-                        <Grid item xs={10} md={9} justifyContent="flex-start">
+                        <Grid item xs justifyContent="flex:end">
                             <Typography
                                 variant="h6"
                                 noWrap
@@ -217,18 +217,8 @@ export default function PrimarySearchAppBar() {
                         </Grid>
                     )}
                     {user && (
-                        <Grid item xs={1} style={{ textAlign: 'end' }}>
+                        <Grid item xs={1} style={{ float: 'right' }}>
                             <Box sx={{ display: { md: 'flex' } }}>
-                                <IconButton
-                                    size="large"
-                                    aria-label="show 17 new notifications"
-                                    color="inherit"
-                                >
-                                    <Badge badgeContent={17} color="error">
-                                        <NotificationsIcon />
-                                    </Badge>
-                                </IconButton>
-                                <span style={{ width: 20 }}></span>
                                 <IconButton
                                     size="large"
                                     edge="end"

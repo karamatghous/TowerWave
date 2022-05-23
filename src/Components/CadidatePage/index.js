@@ -32,6 +32,7 @@ import moment from 'moment'
 import { Autocomplete } from '@mui/material'
 import { City, State } from 'country-state-city'
 import { uniqBy } from 'lodash'
+import { useSnackbar } from 'notistack'
 
 function createData(name, calories, fat, carbs, protein) {
     return {
@@ -227,7 +228,7 @@ export default function EnhancedTable() {
     const [selected, setSelected] = React.useState([])
     const [page, setPage] = React.useState(0)
     const [dense, setDense] = React.useState(true)
-
+    const [loading, setLoading] = React.useState(false)
     const [rows, setRows] = React.useState([])
     const [jobList, setJobList] = React.useState([])
     const [users, setUsers] = React.useState([])
@@ -237,6 +238,7 @@ export default function EnhancedTable() {
     const [searchDialog, setSearchDialog] = React.useState(false)
     const [open, setOpen] = React.useState(false)
     const client = localStorage.getItem('client')
+    const { enqueueSnackbar } = useSnackbar()
     const classes = CadidatePageStyle
     const [cityList, setCityList] = React.useState([])
     const [stateList, setStateList] = React.useState([])
@@ -398,6 +400,7 @@ export default function EnhancedTable() {
     }
 
     const setUser = (selectedUser, row) => {
+        setLoading(true)
         const data = {
             id: row.id,
             employerId: selectedUser.id,
@@ -409,12 +412,31 @@ export default function EnhancedTable() {
                 .put('user/profile/update', data, httpOptions)
                 .then((response) => {
                     if (response.status === 200) {
+                        setLoading(false)
                         const res = response.data.data
+                        enqueueSnackbar('Candidate Assigned Successfully', {
+                            variant: 'success',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                        firstRenderFunction()
                     } else {
+                        setLoading(false)
+                        enqueueSnackbar('Failed to Assign Candidate', {
+                            variant: 'success',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
                         // setError(true)
                     }
                 })
         } catch (err) {
+            setLoading(false)
+            enqueueSnackbar('Failed to Assign Candidate', {
+                variant: 'success',
+                autoHideDuration: 3000,
+                preventDuplicate: true,
+            })
             console.log(err)
         }
     }
@@ -440,14 +462,20 @@ export default function EnhancedTable() {
     }
 
     React.useEffect(() => {
+        firstRenderFunction()
+    }, [])
+
+    const firstRenderFunction = async () => {
+        setLoading(true)
         const resultCity = uniqBy(City.getCitiesOfCountry('US'), 'name')
         setCityList(resultCity)
         const resultState = uniqBy(State.getStatesOfCountry('US'), 'name')
         setStateList(resultState)
-        getJobList()
-        getAllJobs()
-        getAllUsers()
-    }, [])
+        await getJobList()
+        await getAllJobs()
+        await getAllUsers()
+        setLoading(false)
+    }
 
     return (
         <Box sx={{ width: '100%', padding: '0px' }}>

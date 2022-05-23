@@ -43,7 +43,6 @@ function TabPanel(props) {
         </div>
     )
 }
-console.log(httpOptions)
 TabPanel.propTypes = {
     children: PropTypes.node,
     index: PropTypes.number.isRequired,
@@ -105,10 +104,6 @@ export default function BasicTabs() {
         { name: 'Location', value: 'location' },
         { name: 'Location', value: 'location' },
     ]
-
-    React.useEffect(() => {
-        getMyAllEmployees()
-    }, [])
 
     const getMyAllEmployees = () => {
         const data = {
@@ -462,6 +457,7 @@ export default function BasicTabs() {
     const initialize = async () => {
         setLoading(true)
         await getRoles()
+        await getMyAllEmployees()
         await getAllUsersRoles()
         await getAllSettingsInfo()
         setLoading(false)

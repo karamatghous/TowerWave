@@ -102,12 +102,18 @@ function HomePage() {
     })
 
     React.useEffect(() => {
+        firstRenderFunction()
+    }, [])
+
+    const firstRenderFunction = async () => {
+        setLoading(true)
         const resultCity = uniqBy(City.getCitiesOfCountry('US'), 'name')
         setCityList(resultCity)
         const resultState = uniqBy(State.getStatesOfCountry('US'), 'name')
         setStateList(resultState)
-        getMyAllJobs()
-    }, [])
+        await getMyAllJobs()
+        setLoading(false)
+    }
 
     React.useEffect(() => {
         setCountJobList(
@@ -118,6 +124,7 @@ function HomePage() {
     }, [jobList])
 
     const getMyAllJobs = () => {
+        setLoading(true)
         const data = {
             clientId: client,
             userId: user.id,
@@ -126,6 +133,7 @@ function HomePage() {
             axiosClient
                 .post('user/profile/getUserCandidates', data, httpOptions)
                 .then((response) => {
+                    setLoading(false)
                     if (response.status === 200) {
                         const res = response.data.data
                         setJobList(res)
@@ -134,11 +142,13 @@ function HomePage() {
                     }
                 })
         } catch (err) {
+            setLoading(false)
             console.log(err)
         }
     }
 
     const getFilterJobs = () => {
+        setLoading(true)
         const data = {
             clientId: client,
             filter: filter,
@@ -148,6 +158,7 @@ function HomePage() {
             axiosClient
                 .post('user/profile/showFilterUsersByUser', data, httpOptions)
                 .then((response) => {
+                    setLoading(false)
                     if (response.status === 200) {
                         const res = response.data.data
                         setJobList(res)
@@ -156,11 +167,13 @@ function HomePage() {
                     }
                 })
         } catch (err) {
+            setLoading(false)
             console.log(err)
         }
     }
 
     const getSearchJobs = (term) => {
+        setLoading(true)
         const data = {
             clientId: client,
             term: term,
@@ -170,6 +183,7 @@ function HomePage() {
             axiosClient
                 .post('user/profile/showSearchUsersByUser', data, httpOptions)
                 .then((response) => {
+                    setLoading(false)
                     if (response.status === 200) {
                         const res = response.data.data
                         setJobList(res)
@@ -178,11 +192,13 @@ function HomePage() {
                     }
                 })
         } catch (err) {
+            setLoading(false)
             console.log(err)
         }
     }
 
     const handleAddNotes = (selectedRow) => {
+        setLoading(true)
         const data = {
             id: selectedRow.id,
             notes: notesText,
@@ -191,6 +207,7 @@ function HomePage() {
             axiosClient
                 .post('user/profile/updateCandidateNotes', data, httpOptions)
                 .then((response) => {
+                    setLoading(false)
                     if (response.status === 200) {
                         const res = response.data.data
                         getMyAllJobs()
@@ -209,6 +226,7 @@ function HomePage() {
                     }
                 })
         } catch (err) {
+            setLoading(false)
             enqueueSnackbar('Failed to Update Notes', {
                 variant: 'error',
                 autoHideDuration: 3000,
@@ -238,6 +256,7 @@ function HomePage() {
                 justifyContent="center"
                 alignItems="center"
             >
+                <Loader loading={loading} />
                 <Grid item xs={10}>
                     <Table sx={{ minWidth: 700 }} aria-label="customized table">
                         <TableHead>

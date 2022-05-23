@@ -16,7 +16,7 @@ import {
     Button,
 } from '@material-ui/core'
 import moment from 'moment'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, set } from 'react-hook-form'
 import JobPageStyles from './style'
 import { axiosClient, httpOptions } from '../../config'
 import { Autocomplete, Dialog, DialogTitle, Modal } from '@mui/material'
@@ -26,6 +26,7 @@ import { uniqBy } from 'lodash'
 import SearchIcon from '@mui/icons-material/Search'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import Loader from '../Loader'
+import { useSnackbar } from 'notistack'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -63,6 +64,7 @@ function HomePage() {
     const [cityList, setCityList] = React.useState([])
     const [stateList, setStateList] = React.useState([])
     const [notesText, setNotesText] = React.useState('')
+    const { enqueueSnackbar } = useSnackbar()
     const [filter, setFilter] = React.useState({
         city: [],
         state: [],
@@ -98,13 +100,12 @@ function HomePage() {
         defaultValues: { job: '', state: null, city: null, description: '' },
     })
 
-    React.useEffect(() => {
-        getAllUsers()
+    React.useEffect(async () => {
+        await getAllUsers()
         const resultCity = uniqBy(City.getCitiesOfCountry('US'), 'name')
         setCityList(resultCity)
         const resultState = uniqBy(State.getStatesOfCountry('US'), 'name')
         setStateList(resultState)
-        getMyAllJobs()
     }, [])
 
     React.useEffect(() => {
@@ -120,6 +121,7 @@ function HomePage() {
     }, [user])
 
     const getMyAllJobs = () => {
+        setLoading(true)
         if (user.id) {
             const data = {
                 clientId: client,
@@ -129,6 +131,7 @@ function HomePage() {
                 axiosClient
                     .post('user/profile/getUserCandidates', data, httpOptions)
                     .then((response) => {
+                        setLoading(false)
                         if (response.status === 200) {
                             const res = response.data.data
                             setJobList(res)
@@ -137,12 +140,14 @@ function HomePage() {
                         }
                     })
             } catch (err) {
+                setLoading(false)
                 console.log(err)
             }
         }
     }
 
     const getFilterJobs = () => {
+        setLoading(true)
         const data = {
             clientId: client,
             filter: filter,
@@ -152,6 +157,7 @@ function HomePage() {
             axiosClient
                 .post('user/profile/showFilterUsersByUser', data, httpOptions)
                 .then((response) => {
+                    setLoading(false)
                     if (response.status === 200) {
                         const res = response.data.data
                         setJobList(res)
@@ -160,11 +166,13 @@ function HomePage() {
                     }
                 })
         } catch (err) {
+            setLoading(false)
             console.log(err)
         }
     }
 
     const getSearchJobs = (term) => {
+        setLoading(true)
         const data = {
             clientId: client,
             term: term,
@@ -174,6 +182,7 @@ function HomePage() {
             axiosClient
                 .post('user/profile/showSearchUsersByUser', data, httpOptions)
                 .then((response) => {
+                    setLoading(false)
                     if (response.status === 200) {
                         const res = response.data.data
                         setJobList(res)
@@ -182,11 +191,13 @@ function HomePage() {
                     }
                 })
         } catch (err) {
+            setLoading(false)
             console.log(err)
         }
     }
 
     const handleAddNotes = (selectedRow) => {
+        setLoading(true)
         const data = {
             id: selectedRow.id,
             notes: notesText,
@@ -195,19 +206,37 @@ function HomePage() {
             axiosClient
                 .post('user/profile/updateCandidateNotes', data, httpOptions)
                 .then((response) => {
+                    setLoading(false)
                     if (response.status === 200) {
                         const res = response.data.data
                         setJobList(res)
+                        enqueueSnackbar('New Notes Added Successfully', {
+                            variant: 'success',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
                     } else {
+                        enqueueSnackbar('Failed to Update Notes', {
+                            variant: 'error',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
                         // setError(true)
                     }
                 })
         } catch (err) {
+            setLoading(false)
+            enqueueSnackbar('Failed to Update Notes', {
+                variant: 'error',
+                autoHideDuration: 3000,
+                preventDuplicate: true,
+            })
             console.log(err)
         }
     }
 
     const getAllUsers = () => {
+        setLoading(true)
         const data = {
             clientId: client,
         }
@@ -215,6 +244,7 @@ function HomePage() {
             axiosClient
                 .post('auth/getalluser', data, httpOptions)
                 .then((response) => {
+                    setLoading(false)
                     if (response.status === 200) {
                         const res = response.data.data
                         setUsers(res)
@@ -223,10 +253,10 @@ function HomePage() {
                     }
                 })
         } catch (err) {
+            setLoading(false)
             console.log(err)
         }
     }
-    console.log(users)
     const statusList = [
         { name: 'Applied', value: '0' },
         { name: 'Assigned', value: '1' },

@@ -58,9 +58,11 @@ function JobsPage() {
     const [jobList, setJobList] = React.useState([])
     const [editJob, editJobList] = React.useState(null)
     const { enqueueSnackbar } = useSnackbar()
+    const [loading, setLoading] = React.useState(false)
 
     const classes = JobPageStyles
     const copyJob = (job) => {
+        setLoading(true)
         // event.preventDefault();
         const data = {
             clientId: job.clientId,
@@ -71,10 +73,10 @@ function JobsPage() {
             state_name: job.state_name,
             city_name: job.city_name,
         }
-        console.log(data)
         axiosClient
             .post('job/application/create', data, httpOptions)
             .then((response) => {
+                setLoading(false)
                 if (response.status === 200) {
                     reset()
                     enqueueSnackbar('New Copy of Job is Created Successfully', {
@@ -91,6 +93,7 @@ function JobsPage() {
                 }
             })
             .catch((error) => {
+                setLoading(false)
                 console.log(error.response)
                 enqueueSnackbar('Failed to create new Copy of Job', {
                     variant: 'error',
@@ -126,6 +129,7 @@ function JobsPage() {
     }, [])
 
     const getAllJobs = () => {
+        setLoading(true)
         const data = {
             clientId: client,
         }
@@ -133,6 +137,7 @@ function JobsPage() {
             axiosClient
                 .post('jobs/list/getAll', data, httpOptions)
                 .then((response) => {
+                    setLoading(false)
                     if (response.status === 200) {
                         const res = response.data.data
                         setJobList(res)
@@ -141,11 +146,13 @@ function JobsPage() {
                     }
                 })
         } catch (err) {
+            setLoading(false)
             console.log(err)
         }
     }
 
     const getSearchJobs = (term) => {
+        setLoading(true)
         const data = {
             clientId: client,
             term: term,
@@ -154,6 +161,7 @@ function JobsPage() {
             axiosClient
                 .post('jobs/list/getSearchJob', data, httpOptions)
                 .then((response) => {
+                    setLoading(false)
                     if (response.status === 200) {
                         const res = response.data.data
                         setJobList(res)
@@ -162,11 +170,13 @@ function JobsPage() {
                     }
                 })
         } catch (err) {
+            setLoading(false)
             console.log(err)
         }
     }
 
     const getFilterJobs = () => {
+        setLoading(true)
         const data = {
             clientId: client,
             filter: filter,
@@ -175,6 +185,7 @@ function JobsPage() {
             axiosClient
                 .post('jobs/list/getFilterJob', data, httpOptions)
                 .then((response) => {
+                    setLoading(false)
                     if (response.status === 200) {
                         const res = response.data.data
                         setJobList(res)
@@ -183,6 +194,7 @@ function JobsPage() {
                     }
                 })
         } catch (err) {
+            setLoading(false)
             console.log(err)
         }
     }

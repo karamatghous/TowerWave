@@ -20,10 +20,15 @@ import { useForm, Controller } from 'react-hook-form'
 import { Country, State, City } from 'country-state-city'
 import JobFormStyles from './style'
 import { axiosClient, httpOptions } from '../../config'
+import Loader from '../Loader'
+import { useSnackbar } from 'notistack'
 
 function EditLocationInfoForm({ open, handleClose, row }) {
     const classes = JobFormStyles
+    const [loading, setLoading] = React.useState(false)
+    const { enqueueSnackbar } = useSnackbar()
     const onSubmit = (formInputs) => {
+        setLoading(true)
         const data = {
             id: row.id,
             city: row.city,
@@ -36,11 +41,29 @@ function EditLocationInfoForm({ open, handleClose, row }) {
         axiosClient
             .post('user/profile/updateUserSettingLocation', data, httpOptions)
             .then((response) => {
+                setLoading(false)
                 if (response.status === 200) {
+                    enqueueSnackbar('Location Info Updated Successfully', {
+                        variant: 'success',
+                        autoHideDuration: 3000,
+                        preventDuplicate: true,
+                    })
                     reset()
+                } else {
+                    enqueueSnackbar('Failed to Update Location Info', {
+                        variant: 'error',
+                        autoHideDuration: 3000,
+                        preventDuplicate: true,
+                    })
                 }
             })
             .catch((error) => {
+                setLoading(false)
+                enqueueSnackbar('Failed to Update Location Info', {
+                    variant: 'error',
+                    autoHideDuration: 3000,
+                    preventDuplicate: true,
+                })
                 console.log(error.response)
             })
     }
@@ -70,9 +93,9 @@ function EditLocationInfoForm({ open, handleClose, row }) {
         setValue('rate', row.hourly_rate)
         setValue('bonas', row.signin_bonas)
     }, [row])
-    console.log(row)
     return (
         <Grid>
+            <Loader loading={loading} />
             <Dialog
                 fullWidth={true}
                 maxWidth={'sm'}

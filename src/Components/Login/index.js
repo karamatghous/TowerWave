@@ -6,28 +6,26 @@ import {
     Card,
     CardContent,
     Typography,
-    AppBar,
-    Container,
 } from '@material-ui/core'
-import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import LoginStyles from './style'
 import { Box } from '@mui/system'
 import { axiosClient } from '../../config/index'
 import { Autocomplete } from '@mui/material'
 import { useSnackbar } from 'notistack'
+import Loader from '../Loader'
 
 const roles = [
     {
-        value: 'admin',
+        value: '1',
         label: 'Admin',
     },
     {
-        value: 'manager',
+        value: '2',
         label: 'Manager',
     },
     {
-        value: 'recruiter',
+        value: '3',
         label: 'Recruiter',
     },
 ]
@@ -36,17 +34,14 @@ function LoginForm() {
     const [email, setEmail] = React.useState('')
     const [password, setPassword] = React.useState('')
     const [name, setName] = React.useState('')
-    const [role, setRole] = React.useState({
-        value: 'recruiter',
-        label: 'Recruiter',
-    })
+    const [role, setRole] = React.useState(roles[2])
     const [signup, setSignup] = React.useState(false)
     const [error, setError] = React.useState(false)
-    const [splash, setSplash] = React.useState(true)
     const navigate = useNavigate()
     const classes = LoginStyles()
     const client = localStorage.getItem('client')
     const { enqueueSnackbar } = useSnackbar()
+    const [loading, setLoading] = React.useState(false)
 
     React.useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user'))
@@ -54,9 +49,9 @@ function LoginForm() {
             navigate('/dashboard')
         }
     }, [])
-    console.log('login success')
 
     const signInForm = (event) => {
+        setLoading(true)
         setError(false)
         event.preventDefault()
 
@@ -67,6 +62,7 @@ function LoginForm() {
             })
             .then((response) => {
                 if (response.status === 200) {
+                    setLoading(true)
                     localStorage.setItem(
                         'token',
                         'Bearer ' + response.data.data.token
@@ -76,15 +72,19 @@ function LoginForm() {
                         JSON.stringify(response.data.data)
                     )
                     navigate('/dashboard')
+                } else {
+                    setLoading(false)
                 }
             })
             .catch((error) => {
+                setLoading(false)
                 console.log(error.response)
                 setError(true)
             })
     }
     const signUpForm = (event) => {
         event.preventDefault()
+        setLoading(true)
         try {
             axiosClient
                 .post('auth/signup', {
@@ -92,10 +92,11 @@ function LoginForm() {
                     password: password,
                     email: email,
                     name: name,
-                    roles: [role.value],
+                    roleId: role.value,
                 })
                 .then((response) => {
                     if (response.status === 200) {
+                        setLoading(false)
                         setSignup(!signup)
                         enqueueSnackbar('Account Created Successfully', {
                             variant: 'success',
@@ -103,6 +104,7 @@ function LoginForm() {
                             preventDuplicate: true,
                         })
                     } else {
+                        setLoading(false)
                         setError(true)
                         enqueueSnackbar('Failed to Created Account', {
                             variant: 'success',
@@ -112,6 +114,7 @@ function LoginForm() {
                     }
                 })
         } catch (err) {
+            setLoading(false)
             console.log(err)
         }
     }
@@ -130,7 +133,13 @@ function LoginForm() {
 
     return (
         <div>
-            <Grid>
+            <Loader loading={loading} />
+            <Grid
+                container
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+            >
                 <Card className={classes.mainCard}>
                     <CardContent style={{ padding: 0 }}>
                         <Grid container spacing={1}>

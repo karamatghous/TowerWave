@@ -122,7 +122,6 @@ function Level2({ setIndex, client, location }) {
             } else return '#F44336'
         }
     }
-    console.log(answer, getbuttonBackground())
 
     const setRejectUser = () => {
         const data = {

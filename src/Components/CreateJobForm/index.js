@@ -21,6 +21,7 @@ import { Country, State, City } from 'country-state-city'
 import JobFormStyles from './style'
 import { axiosClient, httpOptions } from '../../config'
 import { useSnackbar } from 'notistack'
+import Loader from '../Loader'
 
 function CreateJobForm({ open, handleClose }) {
     const [cityList, setCityList] = React.useState([])
@@ -29,7 +30,9 @@ function CreateJobForm({ open, handleClose }) {
     const client = localStorage.getItem('client')
     const user = JSON.parse(localStorage.getItem('user'))
     const { enqueueSnackbar } = useSnackbar()
+    const [loading, setLoading] = React.useState(false)
     const onSubmit = (formInputs) => {
+        setLoading(true)
         const data = {
             clientId: client,
             employerId: user.id,
@@ -43,6 +46,7 @@ function CreateJobForm({ open, handleClose }) {
             .post('job/application/create', data, httpOptions)
             .then((response) => {
                 if (response.status === 200) {
+                    setLoading(false)
                     reset()
                     enqueueSnackbar('New Job is Created Successfully', {
                         variant: 'success',
@@ -50,6 +54,7 @@ function CreateJobForm({ open, handleClose }) {
                         preventDuplicate: true,
                     })
                 } else {
+                    setLoading(false)
                     enqueueSnackbar('Failed to Create New Job', {
                         variant: 'error',
                         autoHideDuration: 3000,
@@ -58,6 +63,7 @@ function CreateJobForm({ open, handleClose }) {
                 }
             })
             .catch((error) => {
+                setLoading(false)
                 console.log(error.response)
                 enqueueSnackbar('Failed to Create New Job', {
                     variant: 'error',
@@ -89,6 +95,7 @@ function CreateJobForm({ open, handleClose }) {
 
     return (
         <Grid>
+            <Loader loading={loading} />
             <Dialog
                 fullWidth={true}
                 maxWidth={'sm'}

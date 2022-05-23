@@ -24,11 +24,8 @@ import Loader from '../Loader'
 import { useSnackbar } from 'notistack'
 
 function CreateJobForm({ open, handleClose }) {
-    const [cityList, setCityList] = React.useState([])
     const [state, setState] = React.useState('')
     const classes = JobFormStyles
-    const client = localStorage.getItem('client')
-    const user = JSON.parse(localStorage.getItem('user'))
     const [loading, setLoading] = React.useState(false)
     const { enqueueSnackbar } = useSnackbar()
     const onSubmit = (formInputs) => {
@@ -46,12 +43,14 @@ function CreateJobForm({ open, handleClose }) {
             .then((response) => {
                 if (response.status === 200) {
                     reset()
+                    setLoading(false)
                     enqueueSnackbar('New Location Info Added Successfully', {
                         variant: 'success',
                         autoHideDuration: 3000,
                         preventDuplicate: true,
                     })
                 } else {
+                    setLoading(false)
                     enqueueSnackbar('Failed to Add New Location Info', {
                         variant: 'error',
                         autoHideDuration: 3000,

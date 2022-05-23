@@ -12,6 +12,7 @@ import moment from 'moment'
 import { useForm, Controller } from 'react-hook-form'
 import JobPageStyles from './style'
 import { axiosClient, httpOptions } from '../../config'
+import Loader from '../Loader'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -51,7 +52,7 @@ function HomePage() {
     const client = localStorage.getItem('client')
     const user = JSON.parse(localStorage.getItem('user'))
     const [jobList, setJobList] = React.useState([])
-    const [editJob, editJobList] = React.useState(null)
+    const [loading, setLoading] = React.useState(false)
     const now = moment(new Date())
 
     const classes = JobPageStyles
@@ -79,6 +80,7 @@ function HomePage() {
     }, [])
 
     const getMyAllJobs = () => {
+        setLoading(true)
         const data = {
             clientId: client,
             userId: user.id,
@@ -87,6 +89,7 @@ function HomePage() {
             axiosClient
                 .post('user/profile/getAllEmployees', data, httpOptions)
                 .then((response) => {
+                    setLoading(false)
                     if (response.status === 200) {
                         const res = response.data.data
                         setJobList(res)
@@ -95,6 +98,7 @@ function HomePage() {
                     }
                 })
         } catch (err) {
+            setLoading(false)
             console.log(err)
         }
     }
@@ -146,6 +150,7 @@ function HomePage() {
                 marginTop: 50,
             }}
         >
+            <Loader loading={loading} />
             <Grid
                 container
                 direction="row"

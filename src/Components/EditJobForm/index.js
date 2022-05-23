@@ -21,18 +21,18 @@ import { Country, State, City } from 'country-state-city'
 import JobFormStyles from './style'
 import { axiosClient, httpOptions } from '../../config'
 import { useSnackbar } from 'notistack'
+import Loader from '../Loader'
 
 function EditJobForm({ open, handleClose, job }) {
-    const [cityList, setCityList] = React.useState([])
     const [state, setState] = React.useState('')
     const classes = JobFormStyles
-    const client = localStorage.getItem('client')
-    const user = JSON.parse(localStorage.getItem('user'))
 
     const [defaultCity, setDefaultCity] = React.useState(null)
     const [defaultState, setDefaultState] = React.useState(null)
+    const [loading, setLoading] = React.useState(false)
     const { enqueueSnackbar } = useSnackbar()
     const onSubmit = (formInputs) => {
+        setLoading(true)
         const data = {
             id: job.id,
             clientId: job.clientId,
@@ -46,6 +46,7 @@ function EditJobForm({ open, handleClose, job }) {
         axiosClient
             .post('job/application/edit', data, httpOptions)
             .then((response) => {
+                setLoading(false)
                 if (response.status === 200) {
                     reset()
                     enqueueSnackbar('Job Update Successfully', {
@@ -62,7 +63,7 @@ function EditJobForm({ open, handleClose, job }) {
                 }
             })
             .catch((error) => {
-                console.log(error.response)
+                setLoading(false)
                 enqueueSnackbar('Failed to Edit Job', {
                     variant: 'error',
                     autoHideDuration: 3000,
@@ -112,6 +113,7 @@ function EditJobForm({ open, handleClose, job }) {
 
     return (
         <Grid>
+            <Loader loading={loading} />
             <Dialog
                 fullWidth={true}
                 maxWidth={'sm'}
