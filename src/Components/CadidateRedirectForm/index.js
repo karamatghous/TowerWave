@@ -19,7 +19,7 @@ import Autocomplete from '@mui/material/Autocomplete'
 import { Work } from '@mui/icons-material'
 import Avatar from '@mui/material/Avatar'
 import axios from 'axios'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Country, State, City } from 'country-state-city'
@@ -27,18 +27,19 @@ import CadidateFormStyles from './style'
 import { axiosClient, httpOptions } from '../../config'
 import { useSnackbar } from 'notistack'
 import Loader from '../Loader'
+import { useSearchParams } from 'react-router-dom'
 
-function CadidateForm({ open, handleClose }) {
+function CadidateForm({}) {
     const [cityList, setCityList] = React.useState([])
     const [state, setState] = React.useState('')
     const classes = CadidateFormStyles
-    const client = localStorage.getItem('client')
-    const user = JSON.parse(localStorage.getItem('user'))
     const [jobList, setJobList] = React.useState([])
-    const source = 'Admin panel'
     const { enqueueSnackbar } = useSnackbar()
     const [loading, setLoading] = React.useState(false)
-    const referral = user.name
+    const search = useLocation().search
+    const employee = new URLSearchParams(search).get('employee')
+    const source = new URLSearchParams(search).get('source')
+    const client = new URLSearchParams(search).get('client')
     const onSubmit = (formInputs) => {
         setLoading(true)
         // event.preventDefault();
@@ -46,7 +47,7 @@ function CadidateForm({ open, handleClose }) {
             jobId: formInputs.job.id,
             client_id: client,
             source: source,
-            referral: referral,
+            referral: employee,
             first_name: formInputs.firstName,
             last_name: formInputs.lastName,
             email: formInputs.email,
@@ -65,6 +66,7 @@ function CadidateForm({ open, handleClose }) {
                         autoHideDuration: 3000,
                         preventDuplicate: true,
                     })
+                    window.location.replace(document.location.origin)
                 } else {
                     setLoading(false)
                     enqueueSnackbar('Failed to Add New Candidate', {
@@ -87,7 +89,7 @@ function CadidateForm({ open, handleClose }) {
     const getAllJobs = () => {
         setLoading(true)
         const data = {
-            clientId: client,
+            clientId: new URLSearchParams(search).get('client'),
         }
         try {
             axiosClient.post('jobs/list/getAll', data).then((response) => {
@@ -107,6 +109,10 @@ function CadidateForm({ open, handleClose }) {
     }
 
     React.useEffect(() => {
+        localStorage.removeItem('token')
+        localStorage.removeItem('client')
+        localStorage.removeItem('user')
+        localStorage.setItem('isAuthenticated', false)
         getAllJobs()
     }, [])
 
@@ -125,12 +131,7 @@ function CadidateForm({ open, handleClose }) {
     return (
         <Grid>
             <Loader loading={loading} />
-            <Dialog
-                fullWidth={true}
-                maxWidth={'sm'}
-                open={open}
-                onClose={handleClose}
-            >
+            <Dialog fullWidth={true} maxWidth={'sm'} open={true}>
                 <DialogTitle>Welcome To TowerWav</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -313,9 +314,9 @@ function CadidateForm({ open, handleClose }) {
                                                 value={value}
                                                 classes={classes.textField}
                                                 options={jobList}
-                                                getOptionLabel={(option) =>
-                                                    option.job_title
-                                                }
+                                                getOptionLabel={(option) => {
+                                                    return `${option.job_title} - ${option.city_name}`
+                                                }}
                                                 getOptionSelected={(
                                                     option,
                                                     value

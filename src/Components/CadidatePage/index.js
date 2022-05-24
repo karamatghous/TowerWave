@@ -449,16 +449,14 @@ export default function EnhancedTable() {
             clientId: client,
         }
         try {
-            axiosClient
-                .post('jobs/list/getAll', data, httpOptions)
-                .then((response) => {
-                    if (response.status === 200) {
-                        const res = response.data.data
-                        setJobList(res)
-                    } else {
-                        // setError(true)
-                    }
-                })
+            axiosClient.post('jobs/list/getAll', data).then((response) => {
+                if (response.status === 200) {
+                    const res = response.data.data
+                    setJobList(res)
+                } else {
+                    // setError(true)
+                }
+            })
         } catch (err) {
             console.log(err)
         }

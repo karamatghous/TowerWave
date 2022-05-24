@@ -28,6 +28,7 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import Loader from '../Loader'
 import { useNavigate } from 'react-router-dom'
 import { useSnackbar } from 'notistack'
+import CadidateView from '../CadidateView'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -60,6 +61,7 @@ function HomePage() {
     const [filterDialog, setFilterDialog] = React.useState(false)
     const [searchDialog, setSearchDialog] = React.useState(false)
     const [open, setOpen] = React.useState(false)
+    const [openViewDialog, setOpenViewDialog] = React.useState(false)
     const [selectedRow, setSelectedRow] = React.useState({})
     const [search, setSearch] = React.useState('')
     const [cityList, setCityList] = React.useState([])
@@ -269,6 +271,7 @@ function HomePage() {
                                 </StyledTableCell>
                                 <StyledTableCell>Status</StyledTableCell>
                                 <StyledTableCell>Notes</StyledTableCell>
+                                <StyledTableCell></StyledTableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -307,6 +310,15 @@ function HomePage() {
                                         style={{ cursor: 'pointer' }}
                                     >
                                         <span>{row.notes}</span>
+                                    </StyledTableCell>
+                                    <StyledTableCell
+                                        onClick={() => {
+                                            setSelectedRow(row)
+                                            setOpenViewDialog(true)
+                                        }}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        <span>View</span>
                                     </StyledTableCell>
                                 </StyledTableRow>
                             ))}
@@ -743,6 +755,13 @@ function HomePage() {
                     </ListItem>
                 </List>
             </Dialog>
+            {selectedRow && (
+                <CadidateView
+                    open={openViewDialog}
+                    handleClose={setOpenViewDialog}
+                    candidate={selectedRow}
+                />
+            )}
             <Loader loading={loading} />
         </div>
     )

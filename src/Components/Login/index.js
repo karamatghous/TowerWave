@@ -71,6 +71,7 @@ function LoginForm() {
                         'user',
                         JSON.stringify(response.data.data)
                     )
+                    localStorage.setItem('isAuthenticated', true)
                     navigate('/dashboard')
                 } else {
                     setLoading(false)

@@ -37,6 +37,16 @@ import { axiosClient, httpOptions } from '../../config'
 import EditJobForm from '../EditJobForm'
 import { Autocomplete } from '@mui/material'
 import { useSnackbar } from 'notistack'
+import Avatar from '@mui/material/Avatar'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
+import ListItemText from '@mui/material/ListItemText'
+import PersonIcon from '@mui/icons-material/Person'
+import { blue } from '@mui/material/colors'
+
+const sources = [
+    { label: 'Indeed', value: 'Indeed' },
+    { label: 'Facebook', value: 'Facebook' },
+]
 
 function JobsPage() {
     const [cityList, setCityList] = React.useState([])
@@ -55,10 +65,14 @@ function JobsPage() {
     const date = new Date()
     const formatedDate = moment(date).format('MMMM DD, YYYY')
     const client = localStorage.getItem('client')
+    const user = JSON.parse(localStorage.getItem('user'))
     const [jobList, setJobList] = React.useState([])
     const [editJob, editJobList] = React.useState(null)
     const { enqueueSnackbar } = useSnackbar()
     const [loading, setLoading] = React.useState(false)
+    const [selectedValue, setSelectedValue] = React.useState(sources[0])
+    const [selectedJob, setSelectedJob] = React.useState(sources[0])
+    const [openDialog, setOpenDialog] = React.useState(false)
 
     const classes = JobPageStyles
     const copyJob = (job) => {
@@ -134,17 +148,15 @@ function JobsPage() {
             clientId: client,
         }
         try {
-            axiosClient
-                .post('jobs/list/getAll', data, httpOptions)
-                .then((response) => {
-                    setLoading(false)
-                    if (response.status === 200) {
-                        const res = response.data.data
-                        setJobList(res)
-                    } else {
-                        // setError(true)
-                    }
-                })
+            axiosClient.post('jobs/list/getAll', data).then((response) => {
+                setLoading(false)
+                if (response.status === 200) {
+                    const res = response.data.data
+                    setJobList(res)
+                } else {
+                    // setError(true)
+                }
+            })
         } catch (err) {
             setLoading(false)
             console.log(err)
@@ -197,6 +209,18 @@ function JobsPage() {
             setLoading(false)
             console.log(err)
         }
+    }
+
+    const CopyLink = (value) => {
+        navigator.clipboard.writeText(
+            `${document.location.origin}/candidate-redirect?employee=${user.name}&source=${value}&client=${client}`
+        )
+        setOpenDialog(false)
+        enqueueSnackbar('Link Copyed Successfully', {
+            variant: 'success',
+            autoHideDuration: 3000,
+            preventDuplicate: true,
+        })
     }
 
     return (
@@ -619,9 +643,7 @@ function JobsPage() {
                                 >
                                     <LinkIcon
                                         onClick={() => {
-                                            navigator.clipboard.writeText(
-                                                `http://localhost:3000/candidate-redirect?jobId:${job.id}`
-                                            )
+                                            setOpenDialog(true)
                                         }}
                                         style={{
                                             margin: '0px 5px',
@@ -651,7 +673,41 @@ function JobsPage() {
                     </Grid>
                 ))}
             </Grid>
+            <SimpleDialog
+                open={openDialog}
+                onClose={CopyLink}
+                selectedValue={selectedValue}
+            />
         </div>
+    )
+}
+
+function SimpleDialog(props) {
+    const { onClose, selectedValue, open } = props
+    const handleClose = () => {
+        onClose(selectedValue)
+    }
+
+    const handleListItemClick = (value) => {
+        onClose(value)
+    }
+
+    return (
+        <Dialog onClose={handleClose} open={open}>
+            <DialogTitle>Select Link Source</DialogTitle>
+            <List sx={{ pt: 0 }}>
+                {sources.map((source) => (
+                    <ListItem
+                        button
+                        onClick={() => handleListItemClick(source.label)}
+                        key={source.label}
+                        style={{ textAlign: 'center' }}
+                    >
+                        <ListItemText primary={source.label} />
+                    </ListItem>
+                ))}
+            </List>
+        </Dialog>
     )
 }
 

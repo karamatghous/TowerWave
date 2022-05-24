@@ -76,6 +76,21 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }))
 
+const allRoles = [
+    {
+        value: '1',
+        label: 'Admin',
+    },
+    {
+        value: '2',
+        label: 'Manager',
+    },
+    {
+        value: '3',
+        label: 'Recruiter',
+    },
+]
+
 export default function BasicTabs() {
     const [value, setValue] = React.useState(0)
     const date = new Date()
@@ -93,6 +108,12 @@ export default function BasicTabs() {
     const [open, setOpen] = React.useState(false)
     const [editOpen, setEditOpen] = React.useState(false)
     const [loading, setLoading] = React.useState(false)
+    const [email, setEmail] = React.useState('')
+    const [newUserpassword, setNewUserPassword] = React.useState('')
+    const [newUsername, setNewUserName] = React.useState('')
+    const [role, setRole] = React.useState(allRoles[2])
+    const [signup, setSignup] = React.useState(false)
+    const [error, setError] = React.useState(false)
 
     const { enqueueSnackbar } = useSnackbar()
     const [editLocation, setEditLocation] = React.useState({})
@@ -463,6 +484,43 @@ export default function BasicTabs() {
         setLoading(false)
     }
 
+    const signUpForm = (event) => {
+        event.preventDefault()
+        setLoading(true)
+        try {
+            axiosClient
+                .post('auth/signup', {
+                    username: email,
+                    password: newUserpassword,
+                    email: email,
+                    name: newUsername,
+                    roleId: role.value,
+                })
+                .then((response) => {
+                    if (response.status === 200) {
+                        setLoading(false)
+                        setSignup(!signup)
+                        enqueueSnackbar('Account Created Successfully', {
+                            variant: 'success',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                    } else {
+                        setLoading(false)
+                        setError(true)
+                        enqueueSnackbar('Failed to Created Account', {
+                            variant: 'success',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                    }
+                })
+        } catch (err) {
+            setLoading(false)
+            console.log(err)
+        }
+    }
+
     return (
         <>
             <Grid
@@ -500,6 +558,13 @@ export default function BasicTabs() {
                                     <Tab
                                         label="Employees"
                                         {...a11yProps(3)}
+                                        style={{ margin: '0px 10px' }}
+                                    />
+                                )}
+                                {user.role.isAdmin && (
+                                    <Tab
+                                        label="Create a New User"
+                                        {...a11yProps(4)}
                                         style={{ margin: '0px 10px' }}
                                     />
                                 )}
@@ -763,6 +828,164 @@ export default function BasicTabs() {
                                     {CustomizedTables()}
                                 </Grid>
                             </div>
+                        </TabPanel>
+                        <TabPanel value={value} index={4}>
+                            <form onSubmit={signUpForm}>
+                                <Grid container spacing={1}>
+                                    <Grid item xs={6}>
+                                        <Grid
+                                            item
+                                            xs={12}
+                                            className={
+                                                classes.textFieldContainer
+                                            }
+                                        >
+                                            <Typography
+                                                className={classes.labelText}
+                                            >
+                                                Enter Your Name
+                                            </Typography>
+                                            <TextField
+                                                value={newUsername}
+                                                onChange={(event) =>
+                                                    setNewUserName(
+                                                        event.target.value
+                                                    )
+                                                }
+                                                type="name"
+                                                placeholder="Name"
+                                                variant="outlined"
+                                                fullWidth
+                                                required
+                                                className={classes.textField}
+                                            />
+                                        </Grid>
+
+                                        <Grid
+                                            item
+                                            xs={12}
+                                            className={
+                                                classes.textFieldContainer
+                                            }
+                                        >
+                                            <Typography
+                                                className={classes.labelText}
+                                            >
+                                                Enter Your Email
+                                            </Typography>
+                                            <TextField
+                                                value={email}
+                                                onChange={(event) =>
+                                                    setEmail(event.target.value)
+                                                }
+                                                type="email"
+                                                placeholder="Email"
+                                                variant="outlined"
+                                                fullWidth
+                                                className={classes.textField}
+                                                required
+                                            />
+                                        </Grid>
+                                        <Grid
+                                            item
+                                            xs={12}
+                                            className={
+                                                classes.textFieldContainer
+                                            }
+                                        >
+                                            <Typography
+                                                className={classes.labelText}
+                                            >
+                                                Enter Your Password
+                                            </Typography>
+                                            <TextField
+                                                placeholder="Password"
+                                                variant="outlined"
+                                                fullWidth
+                                                required
+                                                type="password"
+                                                value={newUserpassword}
+                                                className={classes.textField}
+                                                onChange={(event) =>
+                                                    setNewUserPassword(
+                                                        event.target.value
+                                                    )
+                                                }
+                                            />
+                                        </Grid>
+                                        <Grid
+                                            item
+                                            xs={12}
+                                            className={
+                                                classes.textFieldContainer
+                                            }
+                                        >
+                                            <Typography
+                                                className={classes.labelText}
+                                            >
+                                                Role
+                                            </Typography>
+                                            <Autocomplete
+                                                onChange={(event, data) => {
+                                                    setRole(data)
+                                                }}
+                                                value={role}
+                                                classes={classes.textField}
+                                                options={allRoles}
+                                                getOptionLabel={(option) =>
+                                                    option.label
+                                                }
+                                                getOptionSelected={(
+                                                    option,
+                                                    value
+                                                ) =>
+                                                    value === undefined ||
+                                                    value === '' ||
+                                                    option.label === value.label
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        placeholder="Select a role"
+                                                        margin="normal"
+                                                        variant="outlined"
+                                                        required
+                                                    />
+                                                )}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Button
+                                                type="submit"
+                                                variant="contained"
+                                                color="primary"
+                                                fullWidth
+                                                className={classes.button}
+                                            >
+                                                {'Create a new user'}
+                                            </Button>
+                                            <br />
+                                        </Grid>
+                                        <Grid
+                                            item
+                                            xs={12}
+                                            style={{ marginTop: 10 }}
+                                        >
+                                            {error && (
+                                                <span
+                                                    style={{
+                                                        color: 'red',
+                                                        marginTop: 10,
+                                                    }}
+                                                >
+                                                    Please check Your Email and
+                                                    Password
+                                                </span>
+                                            )}
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            </form>
                         </TabPanel>
                     </Box>
                 </Grid>

@@ -12,10 +12,12 @@ import Landing from './Components/Landing'
 import Login from './Components/Login'
 import NewPage from './Components/NewPage'
 import MyEmployCandidate from './Components/MyEmployCandidate'
+import CandidateRedirectForm from './Components/CadidateRedirectForm'
 import './App.css'
 import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom'
 import history from './history'
 import React from 'react'
+import ProtectedRoute from './ProtectedRoute'
 
 function App() {
     return (
@@ -26,20 +28,36 @@ function App() {
                     <Routes history={history}>
                         {/* <Header /> */}
                         <Route path="/" element={<Landing />} />
-                        <Route
-                            path="/recruitment"
-                            element={<RecruitmentPage />}
-                        />
-                        <Route path="/dashboard" element={<HomePage />} />
-                        <Route path="/employees" element={<EmployeePage />} />
-                        <Route path="/settings" element={<SettingPage />} />
-                        <Route path="/jobs" element={<JobsPage />} />
-                        <Route path="/candidates" element={<CadidatePage />} />
                         <Route path="/login" element={<Login />} />
                         <Route
-                            path="/managers/employees"
-                            element={<MyEmployCandidate />}
+                            path="/candidate-redirect"
+                            element={<CandidateRedirectForm />}
                         />
+                        <Route path="/" element={<ProtectedRoute />}>
+                            <Route
+                                path="/recruitment"
+                                element={<RecruitmentPage />}
+                            />
+                            <Route path="/dashboard" element={<HomePage />} />
+                            <Route
+                                path="/employees"
+                                element={<EmployeePage />}
+                            />
+                            <Route path="/settings" element={<SettingPage />} />
+                            <Route path="/jobs" element={<JobsPage />} />
+                            <Route
+                                path="/candidates"
+                                element={<CadidatePage />}
+                            />
+                            <Route
+                                path="*"
+                                element={<Navigate to="/login" />}
+                            />
+                            <Route
+                                path="/managers/employees"
+                                element={<MyEmployCandidate />}
+                            />
+                        </Route>
                     </Routes>
                 </BrowserRouter>
             </div>

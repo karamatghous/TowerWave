@@ -184,7 +184,7 @@ export default function PrimarySearchAppBar() {
                             >
                                 Candidates
                             </Typography>
-                            {user.role.isManager && (
+                            {user?.role.isManager && (
                                 <Typography
                                     variant="h6"
                                     noWrap
@@ -238,6 +238,10 @@ export default function PrimarySearchAppBar() {
                                             localStorage.removeItem('token')
                                             localStorage.removeItem('client')
                                             localStorage.removeItem('user')
+                                            localStorage.setItem(
+                                                'isAuthenticated',
+                                                false
+                                            )
                                             navigate('/')
                                         }}
                                     />
