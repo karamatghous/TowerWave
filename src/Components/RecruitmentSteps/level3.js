@@ -18,6 +18,11 @@ function Level2({ setIndex, location, client }) {
     const [questionIndex, setQuestionIndex] = React.useState(0)
     const [shift, setShift] = React.useState({})
     const [type, setType] = React.useState('')
+    const [workWithClient, setWorkWithClient] = React.useState('')
+    const [deactivated, setDeactivated] = React.useState('')
+    const [violations, setViolations] = React.useState('')
+    const [wheelchair, setWheelchair] = React.useState('')
+    const [weight, setWeight] = React.useState('')
     const { enqueueSnackbar } = useSnackbar()
     const navigate = useNavigate()
     const question = [
@@ -132,12 +137,21 @@ function Level2({ setIndex, location, client }) {
     const setDLDetail = () => {
         const data = {
             id: user.id,
-            candidate_type: type,
-            shift: shift ? shift.value : '',
+            attributes: {
+                candidate_type: type,
+                shift: shift ? shift.value : '',
+                status: 'Waitlisted',
+                status_code: 3,
+                service_driver: workWithClient,
+                service_deactive: deactivated,
+                wheel_chair: wheelchair,
+                lifting_weight: weight,
+                service: client.label,
+            },
         }
         try {
             axiosClient
-                .put('user/profile/updateTypeShift', data, httpOptions)
+                .put('user/profile/updateCandidate', data, httpOptions)
                 .then((response) => {
                     if (response.status === 200) {
                         const res = response.data.data
@@ -375,6 +389,14 @@ function Level2({ setIndex, location, client }) {
                                         variant={'outlined'}
                                         color={'error'}
                                         onClick={() => {
+                                            questionIndex === 6 &&
+                                                setWorkWithClient(`NO`)
+                                            questionIndex === 7 &&
+                                                setDeactivated(`No`)
+                                            questionIndex === 8 &&
+                                                setWheelchair(`No`)
+                                            questionIndex === 9 &&
+                                                setWeight(`No`)
                                             questionIndex === 10 &&
                                                 setType(`Part Time`)
                                             if (
@@ -422,6 +444,13 @@ function Level2({ setIndex, location, client }) {
                                     variant={'outlined'}
                                     color={'success'}
                                     onClick={() => {
+                                        questionIndex === 6 &&
+                                            setWorkWithClient(`YES`)
+                                        questionIndex === 7 &&
+                                            setDeactivated(`YES`)
+                                        questionIndex === 8 &&
+                                            setWheelchair(`YES`)
+                                        questionIndex === 9 && setWeight(`YES`)
                                         questionIndex === 10 &&
                                             setType(`Full Time`)
                                         if (questionIndex === 7) {
@@ -490,7 +519,6 @@ function Level2({ setIndex, location, client }) {
                                 onClick={() => {
                                     if (answer) {
                                         setDLDetail()
-                                        setPassUser()
                                         navigate('/dashboard')
                                     } else {
                                         setRejectUser()

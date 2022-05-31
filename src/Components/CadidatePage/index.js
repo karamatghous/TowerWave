@@ -213,7 +213,7 @@ const EnhancedTableToolbar = (props) => {
                 id="tableTitle"
                 component="div"
             >
-                Cadidate List
+                Candidate List
             </Typography>
         </Toolbar>
     )
@@ -222,6 +222,63 @@ const EnhancedTableToolbar = (props) => {
 EnhancedTableToolbar.propTypes = {
     numSelected: PropTypes.number.isRequired,
 }
+
+const filteroptions = [
+    {
+        value: 'Pending',
+        label: 'Pending',
+    },
+    {
+        value: 'Active',
+        label: 'Active',
+    },
+    {
+        value: 'Approved',
+        label: 'Approved',
+    },
+    {
+        value: 'Rejected',
+        label: 'Rejected',
+    },
+]
+
+const hiringList = [
+    {
+        value: 'Pending',
+        label: 'Pending',
+    },
+    {
+        value: 'Hired',
+        label: 'Hired',
+    },
+    {
+        value: 'Terminated',
+        label: 'Terminated',
+    },
+    {
+        value: 'Rejected',
+        label: 'Rejected',
+    },
+]
+
+const trainingList = [
+    {
+        value: 'Pending',
+        label: 'Pending',
+    },
+    {
+        value: 'Active',
+        label: 'Active',
+    },
+    {
+        value: 'Passed',
+        label: 'Passed',
+    },
+    {
+        value: 'Failed',
+        label: 'Failed',
+    },
+]
 
 export default function EnhancedTable() {
     const [order, setOrder] = React.useState('asc')
@@ -251,6 +308,12 @@ export default function EnhancedTable() {
         jobs: [],
         status: '',
         source: '',
+        profile: '',
+        DL: '',
+        BC: '',
+        DT: '',
+        Training: '',
+        hiring: '',
     })
 
     const handleRequestSort = (event, property) => {
@@ -310,7 +373,10 @@ export default function EnhancedTable() {
     const statusList = [
         { name: 'Applied', value: '0' },
         { name: 'Assigned', value: '1' },
-        { name: 'In-Progress', value: '2' },
+        { name: 'Rejected', value: '2' },
+        { name: 'Waitlisted', value: '3' },
+        { name: 'Training', value: '4' },
+        { name: 'Hired', value: '5' },
     ]
 
     const sourceList = [
@@ -662,7 +728,6 @@ export default function EnhancedTable() {
                                                     status: status,
                                                 })
                                             }}
-                                            value={filter.status}
                                             classes={classes.textField}
                                             disableCloseOnSelect
                                             options={statusList}
@@ -708,7 +773,6 @@ export default function EnhancedTable() {
                                                     source: source,
                                                 })
                                             }}
-                                            value={filter.source}
                                             classes={classes.textField}
                                             disableCloseOnSelect
                                             options={sourceList}
@@ -753,7 +817,6 @@ export default function EnhancedTable() {
                                                     jobs: job,
                                                 })
                                             }}
-                                            value={filter.jobs}
                                             classes={classes.textField}
                                             disableCloseOnSelect
                                             options={jobList}
@@ -775,6 +838,276 @@ export default function EnhancedTable() {
                                                     {...params}
                                                     label="Select a Job"
                                                     placeholder="Job"
+                                                    margin="normal"
+                                                    variant="outlined"
+                                                />
+                                            )}
+                                            fullWidth
+                                        />
+                                    </ListItem>
+
+                                    <ListItem
+                                        key={'filter'}
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            paddingTop: 0,
+                                            paddingBottom: 0,
+                                        }}
+                                    >
+                                        <Autocomplete
+                                            onChange={(event, job) => {
+                                                setFilter({
+                                                    ...filter,
+                                                    profile: job,
+                                                })
+                                            }}
+                                            classes={classes.textField}
+                                            disableCloseOnSelect
+                                            options={filteroptions}
+                                            getOptionLabel={(option) =>
+                                                option.label
+                                            }
+                                            key="autocomplete"
+                                            getOptionSelected={(
+                                                option,
+                                                value
+                                            ) =>
+                                                value === undefined ||
+                                                value === '' ||
+                                                option.label === value.label
+                                            }
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Profile Photo"
+                                                    placeholder="Profile Photo"
+                                                    margin="normal"
+                                                    variant="outlined"
+                                                />
+                                            )}
+                                            fullWidth
+                                        />
+                                    </ListItem>
+
+                                    <ListItem
+                                        key={'filter'}
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            paddingTop: 0,
+                                            paddingBottom: 0,
+                                        }}
+                                    >
+                                        <Autocomplete
+                                            onChange={(event, job) => {
+                                                setFilter({
+                                                    ...filter,
+                                                    Dl: job,
+                                                })
+                                            }}
+                                            classes={classes.textField}
+                                            disableCloseOnSelect
+                                            options={filteroptions}
+                                            getOptionLabel={(option) =>
+                                                option.label
+                                            }
+                                            key="autocomplete"
+                                            getOptionSelected={(
+                                                option,
+                                                value
+                                            ) =>
+                                                value === undefined ||
+                                                value === '' ||
+                                                option.label === value.label
+                                            }
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Driving License"
+                                                    placeholder="Driving License"
+                                                    margin="normal"
+                                                    variant="outlined"
+                                                />
+                                            )}
+                                            fullWidth
+                                        />
+                                    </ListItem>
+
+                                    <ListItem
+                                        key={'filter'}
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            paddingTop: 0,
+                                            paddingBottom: 0,
+                                        }}
+                                    >
+                                        <Autocomplete
+                                            onChange={(event, job) => {
+                                                setFilter({
+                                                    ...filter,
+                                                    BC: job,
+                                                })
+                                            }}
+                                            classes={classes.textField}
+                                            disableCloseOnSelect
+                                            options={filteroptions}
+                                            getOptionLabel={(option) =>
+                                                option.label
+                                            }
+                                            key="autocomplete"
+                                            getOptionSelected={(
+                                                option,
+                                                value
+                                            ) =>
+                                                value === undefined ||
+                                                value === '' ||
+                                                option.label === value.label
+                                            }
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Background Check"
+                                                    placeholder="Background Check"
+                                                    margin="normal"
+                                                    variant="outlined"
+                                                />
+                                            )}
+                                            fullWidth
+                                        />
+                                    </ListItem>
+
+                                    <ListItem
+                                        key={'filter'}
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            paddingTop: 0,
+                                            paddingBottom: 0,
+                                        }}
+                                    >
+                                        <Autocomplete
+                                            onChange={(event, job) => {
+                                                setFilter({
+                                                    ...filter,
+                                                    DT: job,
+                                                })
+                                            }}
+                                            classes={classes.textField}
+                                            disableCloseOnSelect
+                                            options={filteroptions}
+                                            getOptionLabel={(option) =>
+                                                option.label
+                                            }
+                                            key="autocomplete"
+                                            getOptionSelected={(
+                                                option,
+                                                value
+                                            ) =>
+                                                value === undefined ||
+                                                value === '' ||
+                                                option.label === value.label
+                                            }
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Drug Test"
+                                                    placeholder="Drug Test"
+                                                    margin="normal"
+                                                    variant="outlined"
+                                                />
+                                            )}
+                                            fullWidth
+                                        />
+                                    </ListItem>
+
+                                    <ListItem
+                                        key={'filter'}
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            paddingTop: 0,
+                                            paddingBottom: 0,
+                                        }}
+                                    >
+                                        <Autocomplete
+                                            onChange={(event, job) => {
+                                                setFilter({
+                                                    ...filter,
+                                                    Training: job,
+                                                })
+                                            }}
+                                            classes={classes.textField}
+                                            disableCloseOnSelect
+                                            options={trainingList}
+                                            getOptionLabel={(option) =>
+                                                option.label
+                                            }
+                                            key="autocomplete"
+                                            getOptionSelected={(
+                                                option,
+                                                value
+                                            ) =>
+                                                value === undefined ||
+                                                value === '' ||
+                                                option.label === value.label
+                                            }
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Training"
+                                                    placeholder="Training"
+                                                    margin="normal"
+                                                    variant="outlined"
+                                                />
+                                            )}
+                                            fullWidth
+                                        />
+                                    </ListItem>
+
+                                    <ListItem
+                                        key={'filter'}
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            paddingTop: 0,
+                                            paddingBottom: 0,
+                                        }}
+                                    >
+                                        <Autocomplete
+                                            onChange={(event, job) => {
+                                                setFilter({
+                                                    ...filter,
+                                                    hiring: job,
+                                                })
+                                            }}
+                                            classes={classes.textField}
+                                            disableCloseOnSelect
+                                            options={hiringList}
+                                            getOptionLabel={(option) =>
+                                                option.label
+                                            }
+                                            key="autocomplete"
+                                            getOptionSelected={(
+                                                option,
+                                                value
+                                            ) =>
+                                                value === undefined ||
+                                                value === '' ||
+                                                option.label === value.label
+                                            }
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Hiring Status"
+                                                    placeholder="Hiring Status"
                                                     margin="normal"
                                                     variant="outlined"
                                                 />

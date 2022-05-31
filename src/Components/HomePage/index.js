@@ -50,12 +50,70 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }))
 
+const filteroptions = [
+    {
+        value: 'Pending',
+        label: 'Pending',
+    },
+    {
+        value: 'Active',
+        label: 'Active',
+    },
+    {
+        value: 'Approved',
+        label: 'Approved',
+    },
+    {
+        value: 'Rejected',
+        label: 'Rejected',
+    },
+]
+
+const hiringList = [
+    {
+        value: 'Pending',
+        label: 'Pending',
+    },
+    {
+        value: 'Hired',
+        label: 'Hired',
+    },
+    {
+        value: 'Terminated',
+        label: 'Terminated',
+    },
+    {
+        value: 'Rejected',
+        label: 'Rejected',
+    },
+]
+
+const trainingList = [
+    {
+        value: 'Pending',
+        label: 'Pending',
+    },
+    {
+        value: 'Active',
+        label: 'Active',
+    },
+    {
+        value: 'Passed',
+        label: 'Passed',
+    },
+    {
+        value: 'Failed',
+        label: 'Failed',
+    },
+]
+
 function HomePage() {
     const date = new Date()
     const formatedDate = moment(date).format('MMMM DD, YYYY')
     const client = localStorage.getItem('client')
     const user = JSON.parse(localStorage.getItem('user'))
     const [jobList, setJobList] = React.useState([])
+    const [allJobs, setAllJobs] = React.useState([])
     const [countJobList, setCountJobList] = React.useState([])
     const now = moment(new Date())
     const [filterDialog, setFilterDialog] = React.useState(false)
@@ -75,6 +133,12 @@ function HomePage() {
         jobs: [],
         status: '',
         source: '',
+        profile: '',
+        DL: '',
+        BC: '',
+        DT: '',
+        Training: '',
+        hiring: '',
     })
     const [loading, setLoading] = React.useState(false)
     const navigate = useNavigate()
@@ -83,6 +147,10 @@ function HomePage() {
         setNotesText(row.notes ? row.notes : '')
         await setSelectedRow(row)
         setOpen(true)
+    }
+
+    const handleViewClose = () => {
+        setOpenViewDialog(false)
     }
 
     const handleClose = () => {
@@ -113,6 +181,7 @@ function HomePage() {
         setCityList(resultCity)
         const resultState = uniqBy(State.getStatesOfCountry('US'), 'name')
         setStateList(resultState)
+        await getJobList()
         await getMyAllJobs()
         setLoading(false)
     }
@@ -145,6 +214,24 @@ function HomePage() {
                 })
         } catch (err) {
             setLoading(false)
+            console.log(err)
+        }
+    }
+
+    const getJobList = () => {
+        const data = {
+            clientId: client,
+        }
+        try {
+            axiosClient.post('jobs/list/getAll', data).then((response) => {
+                if (response.status === 200) {
+                    const res = response.data.data
+                    setAllJobs(res)
+                } else {
+                    // setError(true)
+                }
+            })
+        } catch (err) {
             console.log(err)
         }
     }
@@ -203,11 +290,13 @@ function HomePage() {
         setLoading(true)
         const data = {
             id: selectedRow.id,
-            notes: notesText,
+            attributes: {
+                notes: notesText,
+            },
         }
         try {
             axiosClient
-                .post('user/profile/updateCandidateNotes', data, httpOptions)
+                .put('user/profile/updateCandidate', data, httpOptions)
                 .then((response) => {
                     setLoading(false)
                     if (response.status === 200) {
@@ -241,7 +330,10 @@ function HomePage() {
     const statusList = [
         { name: 'Applied', value: '0' },
         { name: 'Assigned', value: '1' },
-        { name: 'In-Progress', value: '2' },
+        { name: 'Rejected', value: '2' },
+        { name: 'Waitlisted', value: '3' },
+        { name: 'Training', value: '4' },
+        { name: 'Hired', value: '5' },
     ]
 
     const sourceList = [
@@ -249,7 +341,6 @@ function HomePage() {
         { name: 'Facebook', value: 'Facebook' },
         { name: 'Indeed', value: 'Indeed' },
     ]
-
     function CustomizedTables() {
         return (
             <Grid
@@ -259,7 +350,7 @@ function HomePage() {
                 alignItems="center"
             >
                 <Loader loading={loading} />
-                <Grid item xs={10}>
+                <Grid item xs={10} md={12}>
                     <Table sx={{ minWidth: 700 }} aria-label="customized table">
                         <TableHead>
                             <TableRow>
@@ -269,6 +360,15 @@ function HomePage() {
                                 <StyledTableCell>
                                     Days in Progress
                                 </StyledTableCell>
+                                <StyledTableCell>Profile Photo</StyledTableCell>
+                                <StyledTableCell>
+                                    Driving License
+                                </StyledTableCell>
+                                <StyledTableCell>
+                                    Background Check
+                                </StyledTableCell>
+                                <StyledTableCell>Drug Test</StyledTableCell>
+                                <StyledTableCell>Training</StyledTableCell>
                                 <StyledTableCell>Status</StyledTableCell>
                                 <StyledTableCell>Notes</StyledTableCell>
                                 <StyledTableCell></StyledTableCell>
@@ -299,6 +399,29 @@ function HomePage() {
                                         {moment(new Date(row.updatedAt)).format(
                                             'MMMM DD, YYYY'
                                         )}
+                                    </StyledTableCell>
+                                    <StyledTableCell>
+                                        {row.profile_photo
+                                            ? row.profile_photo
+                                            : 'pending'}
+                                    </StyledTableCell>
+                                    <StyledTableCell>
+                                        {row.DLN_status
+                                            ? row.DLN_status
+                                            : 'pending'}
+                                    </StyledTableCell>
+                                    <StyledTableCell>
+                                        {row.BGC ? row.BGC : 'pending'}
+                                    </StyledTableCell>
+                                    <StyledTableCell>
+                                        {row.drug_test
+                                            ? row.drug_test
+                                            : 'pending'}
+                                    </StyledTableCell>
+                                    <StyledTableCell>
+                                        {row.training
+                                            ? row.training
+                                            : 'pending'}
                                     </StyledTableCell>
                                     <StyledTableCell>
                                         {row.status}
@@ -381,7 +504,7 @@ function HomePage() {
                 justifyContent="center"
                 alignItems="center"
             >
-                <Grid item xs={10}>
+                <Grid item xs={10} md={12}>
                     <Grid
                         container
                         direction="row"
@@ -593,7 +716,7 @@ function HomePage() {
                             fullWidth
                         />
                     </ListItem>
-                    <ListItem
+                    {/* <ListItem
                         key={'statusfilter'}
                         style={{
                             display: 'flex',
@@ -610,7 +733,6 @@ function HomePage() {
                                     status: status,
                                 })
                             }}
-                            value={filter.status}
                             classes={classes.textField}
                             disableCloseOnSelect
                             options={statusList}
@@ -632,7 +754,7 @@ function HomePage() {
                             )}
                             fullWidth
                         />
-                    </ListItem>
+                    </ListItem> */}
 
                     <ListItem
                         key={'filter'}
@@ -651,7 +773,6 @@ function HomePage() {
                                     source: source,
                                 })
                             }}
-                            value={filter.source}
                             classes={classes.textField}
                             disableCloseOnSelect
                             options={sourceList}
@@ -685,6 +806,7 @@ function HomePage() {
                         }}
                     >
                         <Autocomplete
+                            multiple
                             onChange={(event, job) => {
                                 setFilter({
                                     ...filter,
@@ -694,7 +816,7 @@ function HomePage() {
                             value={filter.jobs}
                             classes={classes.textField}
                             disableCloseOnSelect
-                            options={jobList}
+                            options={allJobs}
                             getOptionLabel={(option) => option.job_title}
                             key="autocomplete"
                             getOptionSelected={(option, value) =>
@@ -707,6 +829,246 @@ function HomePage() {
                                     {...params}
                                     label="Select a Job"
                                     placeholder="Job"
+                                    margin="normal"
+                                    variant="outlined"
+                                />
+                            )}
+                            fullWidth
+                        />
+                    </ListItem>
+
+                    <ListItem
+                        key={'filter'}
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            paddingTop: 0,
+                            paddingBottom: 0,
+                        }}
+                    >
+                        <Autocomplete
+                            onChange={(event, job) => {
+                                setFilter({
+                                    ...filter,
+                                    profile: job,
+                                })
+                            }}
+                            classes={classes.textField}
+                            disableCloseOnSelect
+                            options={filteroptions}
+                            getOptionLabel={(option) => option.label}
+                            key="autocomplete"
+                            getOptionSelected={(option, value) =>
+                                value === undefined ||
+                                value === '' ||
+                                option.label === value.label
+                            }
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Profile Photo"
+                                    placeholder="Profile Photo"
+                                    margin="normal"
+                                    variant="outlined"
+                                />
+                            )}
+                            fullWidth
+                        />
+                    </ListItem>
+
+                    <ListItem
+                        key={'filter'}
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            paddingTop: 0,
+                            paddingBottom: 0,
+                        }}
+                    >
+                        <Autocomplete
+                            onChange={(event, job) => {
+                                setFilter({
+                                    ...filter,
+                                    Dl: job,
+                                })
+                            }}
+                            classes={classes.textField}
+                            disableCloseOnSelect
+                            options={filteroptions}
+                            getOptionLabel={(option) => option.label}
+                            key="autocomplete"
+                            getOptionSelected={(option, value) =>
+                                value === undefined ||
+                                value === '' ||
+                                option.label === value.label
+                            }
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Driving License"
+                                    placeholder="Driving License"
+                                    margin="normal"
+                                    variant="outlined"
+                                />
+                            )}
+                            fullWidth
+                        />
+                    </ListItem>
+
+                    <ListItem
+                        key={'filter'}
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            paddingTop: 0,
+                            paddingBottom: 0,
+                        }}
+                    >
+                        <Autocomplete
+                            onChange={(event, job) => {
+                                setFilter({
+                                    ...filter,
+                                    BC: job,
+                                })
+                            }}
+                            classes={classes.textField}
+                            disableCloseOnSelect
+                            options={filteroptions}
+                            getOptionLabel={(option) => option.label}
+                            key="autocomplete"
+                            getOptionSelected={(option, value) =>
+                                value === undefined ||
+                                value === '' ||
+                                option.label === value.label
+                            }
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Background Check"
+                                    placeholder="Background Check"
+                                    margin="normal"
+                                    variant="outlined"
+                                />
+                            )}
+                            fullWidth
+                        />
+                    </ListItem>
+
+                    <ListItem
+                        key={'filter'}
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            paddingTop: 0,
+                            paddingBottom: 0,
+                        }}
+                    >
+                        <Autocomplete
+                            onChange={(event, job) => {
+                                setFilter({
+                                    ...filter,
+                                    DT: job,
+                                })
+                            }}
+                            classes={classes.textField}
+                            disableCloseOnSelect
+                            options={filteroptions}
+                            getOptionLabel={(option) => option.label}
+                            key="autocomplete"
+                            getOptionSelected={(option, value) =>
+                                value === undefined ||
+                                value === '' ||
+                                option.label === value.label
+                            }
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Drug Test"
+                                    placeholder="Drug Test"
+                                    margin="normal"
+                                    variant="outlined"
+                                />
+                            )}
+                            fullWidth
+                        />
+                    </ListItem>
+
+                    <ListItem
+                        key={'filter'}
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            paddingTop: 0,
+                            paddingBottom: 0,
+                        }}
+                    >
+                        <Autocomplete
+                            onChange={(event, job) => {
+                                setFilter({
+                                    ...filter,
+                                    Training: job,
+                                })
+                            }}
+                            classes={classes.textField}
+                            disableCloseOnSelect
+                            options={trainingList}
+                            getOptionLabel={(option) => option.label}
+                            key="autocomplete"
+                            getOptionSelected={(option, value) =>
+                                value === undefined ||
+                                value === '' ||
+                                option.label === value.label
+                            }
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Training"
+                                    placeholder="Training"
+                                    margin="normal"
+                                    variant="outlined"
+                                />
+                            )}
+                            fullWidth
+                        />
+                    </ListItem>
+
+                    <ListItem
+                        key={'filter'}
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            paddingTop: 0,
+                            paddingBottom: 0,
+                        }}
+                    >
+                        <Autocomplete
+                            onChange={(event, job) => {
+                                setFilter({
+                                    ...filter,
+                                    hiring: job,
+                                })
+                            }}
+                            classes={classes.textField}
+                            disableCloseOnSelect
+                            options={hiringList}
+                            getOptionLabel={(option) => option.label}
+                            key="autocomplete"
+                            getOptionSelected={(option, value) =>
+                                value === undefined ||
+                                value === '' ||
+                                option.label === value.label
+                            }
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Hiring Status"
+                                    placeholder="Hiring Status"
                                     margin="normal"
                                     variant="outlined"
                                 />
@@ -758,7 +1120,7 @@ function HomePage() {
             {selectedRow && (
                 <CadidateView
                     open={openViewDialog}
-                    handleClose={setOpenViewDialog}
+                    handleClose={handleViewClose}
                     candidate={selectedRow}
                 />
             )}

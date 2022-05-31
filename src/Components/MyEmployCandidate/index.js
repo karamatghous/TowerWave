@@ -260,7 +260,10 @@ function HomePage() {
     const statusList = [
         { name: 'Applied', value: '0' },
         { name: 'Assigned', value: '1' },
-        { name: 'In-Progress', value: '2' },
+        { name: 'Rejected', value: '2' },
+        { name: 'Waitlisted', value: '3' },
+        { name: 'Training', value: '4' },
+        { name: 'Hired', value: '5' },
     ]
 
     const sourceList = [

@@ -27,6 +27,64 @@ import CadidateFormStyles from './style'
 import { axiosClient, httpOptions } from '../../config'
 import { useSnackbar } from 'notistack'
 import Loader from '../Loader'
+import moment from 'moment'
+
+const filter = [
+    {
+        value: 'Pending',
+        label: 'Pending',
+    },
+    {
+        value: 'Active',
+        label: 'Active',
+    },
+    {
+        value: 'Approved',
+        label: 'Approved',
+    },
+    {
+        value: 'Rejected',
+        label: 'Rejected',
+    },
+]
+
+const hiringList = [
+    {
+        value: 'Pending',
+        label: 'Pending',
+    },
+    {
+        value: 'Hired',
+        label: 'Hired',
+    },
+    {
+        value: 'Terminated',
+        label: 'Terminated',
+    },
+    {
+        value: 'Rejected',
+        label: 'Rejected',
+    },
+]
+
+const trainingList = [
+    {
+        value: 'Pending',
+        label: 'Pending',
+    },
+    {
+        value: 'Active',
+        label: 'Active',
+    },
+    {
+        value: 'Passed',
+        label: 'Passed',
+    },
+    {
+        value: 'Failed',
+        label: 'Failed',
+    },
+]
 
 function CadidateForm({ open, handleClose, candidate }) {
     const classes = CadidateFormStyles
@@ -34,25 +92,270 @@ function CadidateForm({ open, handleClose, candidate }) {
     const user = JSON.parse(localStorage.getItem('user'))
     const { enqueueSnackbar } = useSnackbar()
     const [loading, setLoading] = React.useState(false)
-    console.log(candidate)
+    const [profileStatus, setProfileStatus] = React.useState(
+        candidate.profile_photo
+            ? filter.find((f) => f.label === candidate.profile_photo)
+            : filter[0]
+    )
+
+    const [DLStatus, setDLStatus] = React.useState(
+        candidate.DLN_status
+            ? filter.find((f) => f.label === candidate.DLN_status)
+            : filter[0]
+    )
+
+    const [BCStatus, setBCStatus] = React.useState(
+        candidate.BGC
+            ? filter.find((f) => f.label === candidate.BGC)
+            : filter[0]
+    )
+
+    const [trainingStatus, setTrainingStatus] = React.useState(
+        candidate.training
+            ? trainingList.find((f) => f.label === candidate.training)
+            : trainingList[0]
+    )
+
+    const [hiringStatus, setHiringStatus] = React.useState(
+        candidate.hire_or_not
+            ? hiringList.find((f) => f.label === candidate.hire_or_not)
+            : hiringList[0]
+    )
 
     const onClose = () => {
-        handleClose(false)
+        handleClose()
     }
 
-    React.useEffect(() => {}, [])
+    console.log(DLStatus)
 
-    const {
-        control,
-        handleSubmit,
-        setValue,
-        getValues,
-        formState: { errors },
-        reset,
-    } = useForm({
-        mode: 'onChange',
-        defaultValues: { job: null, state: null, city: null, description: '' },
-    })
+    React.useEffect(() => {
+        setProfileStatus(
+            candidate.profile_photo
+                ? filter.find((f) => f.label === candidate.profile_photo)
+                : filter[0]
+        )
+        setDLStatus(
+            candidate.DLN_status
+                ? filter.find((f) => f.label === candidate.DLN_status)
+                : filter[0]
+        )
+        setBCStatus(
+            candidate.BGC
+                ? filter.find((f) => f.label === candidate.BGC)
+                : filter[0]
+        )
+        setTrainingStatus(
+            candidate.training
+                ? trainingList.find((f) => f.label === candidate.training)
+                : trainingList[0]
+        )
+        setHiringStatus(
+            candidate.hire_or_not
+                ? hiringList.find((f) => f.label === candidate.hire_or_not)
+                : hiringList[0]
+        )
+    }, [candidate])
+
+    const handleProfileHiringStatus = (value) => {
+        setLoading(true)
+        const data = {
+            id: candidate.id,
+            attributes: {
+                hire_or_not: value,
+                hire_date: new Date().getUTCDate(),
+            },
+        }
+        try {
+            axiosClient
+                .put('user/profile/updateCandidate', data, httpOptions)
+                .then((response) => {
+                    setLoading(false)
+                    if (response.status === 200) {
+                        const res = response.data.data
+                        enqueueSnackbar('Profile Updated Successfully', {
+                            variant: 'success',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                    } else {
+                        enqueueSnackbar('Failed to Update Profile', {
+                            variant: 'error',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                        // setError(true)
+                    }
+                })
+        } catch (err) {
+            setLoading(false)
+            enqueueSnackbar('Failed to Update Profile', {
+                variant: 'error',
+                autoHideDuration: 3000,
+                preventDuplicate: true,
+            })
+            console.log(err)
+        }
+    }
+
+    const handleProfileTrainingStatus = (value) => {
+        setLoading(true)
+        const data = {
+            id: candidate.id,
+            attributes: {
+                training: value,
+            },
+        }
+        try {
+            axiosClient
+                .put('user/profile/updateCandidate', data, httpOptions)
+                .then((response) => {
+                    setLoading(false)
+                    if (response.status === 200) {
+                        const res = response.data.data
+                        enqueueSnackbar('Profile Updated Successfully', {
+                            variant: 'success',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                    } else {
+                        enqueueSnackbar('Failed to Update Profile', {
+                            variant: 'error',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                        // setError(true)
+                    }
+                })
+        } catch (err) {
+            setLoading(false)
+            enqueueSnackbar('Failed to Update Profile', {
+                variant: 'error',
+                autoHideDuration: 3000,
+                preventDuplicate: true,
+            })
+            console.log(err)
+        }
+    }
+
+    const handleProfileBCStatus = (value) => {
+        setLoading(true)
+        const data = {
+            id: candidate.id,
+            attributes: {
+                BGC: value,
+            },
+        }
+        try {
+            axiosClient
+                .put('user/profile/updateCandidate', data, httpOptions)
+                .then((response) => {
+                    setLoading(false)
+                    if (response.status === 200) {
+                        const res = response.data.data
+                        enqueueSnackbar('Profile Updated Successfully', {
+                            variant: 'success',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                    } else {
+                        enqueueSnackbar('Failed to Update Profile', {
+                            variant: 'error',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                        // setError(true)
+                    }
+                })
+        } catch (err) {
+            setLoading(false)
+            enqueueSnackbar('Failed to Update Profile', {
+                variant: 'error',
+                autoHideDuration: 3000,
+                preventDuplicate: true,
+            })
+            console.log(err)
+        }
+    }
+
+    const handleProfilePhotoStatus = (value) => {
+        setLoading(true)
+        const data = {
+            id: candidate.id,
+            attributes: {
+                profile_photo: value,
+            },
+        }
+        try {
+            axiosClient
+                .put('user/profile/updateCandidate', data, httpOptions)
+                .then((response) => {
+                    setLoading(false)
+                    if (response.status === 200) {
+                        const res = response.data.data
+                        enqueueSnackbar('Profile Updated Successfully', {
+                            variant: 'success',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                    } else {
+                        enqueueSnackbar('Failed to Update Profile', {
+                            variant: 'error',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                        // setError(true)
+                    }
+                })
+        } catch (err) {
+            setLoading(false)
+            enqueueSnackbar('Failed to Update Profile', {
+                variant: 'error',
+                autoHideDuration: 3000,
+                preventDuplicate: true,
+            })
+            console.log(err)
+        }
+    }
+
+    const handleProfileDLStatus = (value) => {
+        setLoading(true)
+        const data = {
+            id: candidate.id,
+            attributes: {
+                DLN_status: value,
+            },
+        }
+        try {
+            axiosClient
+                .put('user/profile/updateCandidate', data, httpOptions)
+                .then((response) => {
+                    setLoading(false)
+                    if (response.status === 200) {
+                        const res = response.data.data
+                        enqueueSnackbar('Profile Updated Successfully', {
+                            variant: 'success',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                    } else {
+                        enqueueSnackbar('Failed to Update Profile', {
+                            variant: 'error',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                        // setError(true)
+                    }
+                })
+        } catch (err) {
+            setLoading(false)
+            enqueueSnackbar('Failed to Update Profile', {
+                variant: 'error',
+                autoHideDuration: 3000,
+                preventDuplicate: true,
+            })
+            console.log(err)
+        }
+    }
 
     return (
         candidate && (
@@ -64,10 +367,10 @@ function CadidateForm({ open, handleClose, candidate }) {
                     open={open}
                     onClose={onClose}
                 >
-                    <DialogTitle>View Cadidate Details</DialogTitle>
+                    <DialogTitle>View Candidate Details</DialogTitle>
                     <DialogContent>
                         <Grid container spacing={1}>
-                            <Grid item xs={4}>
+                            <Grid item xs={5}>
                                 <Typography
                                     component={'span'}
                                     className={classes.labelText}
@@ -77,7 +380,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                             </Grid>
                             <Grid
                                 item
-                                xs={8}
+                                xs={7}
                                 className={classes.textFieldContainer}
                             >
                                 <Typography
@@ -87,7 +390,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                                     {`${candidate.first_name} ${candidate.last_name}`}
                                 </Typography>
                             </Grid>
-                            <Grid item xs={4}>
+                            <Grid item xs={5}>
                                 <Typography
                                     component={'span'}
                                     className={classes.labelText}
@@ -97,7 +400,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                             </Grid>
                             <Grid
                                 item
-                                xs={8}
+                                xs={7}
                                 className={classes.textFieldContainer}
                             >
                                 <Typography
@@ -107,7 +410,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                                     {candidate?.post_job?.job_title}
                                 </Typography>
                             </Grid>
-                            <Grid item xs={4}>
+                            <Grid item xs={5}>
                                 <Typography
                                     component={'span'}
                                     className={classes.labelText}
@@ -117,7 +420,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                             </Grid>
                             <Grid
                                 item
-                                xs={8}
+                                xs={7}
                                 className={classes.textFieldContainer}
                             >
                                 <Typography
@@ -127,7 +430,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                                     {candidate.email}
                                 </Typography>
                             </Grid>
-                            <Grid item xs={4}>
+                            <Grid item xs={5}>
                                 <Typography
                                     component={'span'}
                                     className={classes.labelText}
@@ -137,7 +440,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                             </Grid>
                             <Grid
                                 item
-                                xs={8}
+                                xs={7}
                                 className={classes.textFieldContainer}
                             >
                                 <Typography
@@ -147,7 +450,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                                     {candidate.phone_number}
                                 </Typography>
                             </Grid>
-                            <Grid item xs={4}>
+                            <Grid item xs={5}>
                                 <Typography
                                     component={'span'}
                                     className={classes.labelText}
@@ -157,7 +460,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                             </Grid>
                             <Grid
                                 item
-                                xs={8}
+                                xs={7}
                                 className={classes.textFieldContainer}
                             >
                                 <Typography
@@ -167,7 +470,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                                     {candidate.status}
                                 </Typography>
                             </Grid>
-                            <Grid item xs={4}>
+                            <Grid item xs={5}>
                                 <Typography
                                     component={'span'}
                                     className={classes.labelText}
@@ -177,7 +480,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                             </Grid>
                             <Grid
                                 item
-                                xs={8}
+                                xs={7}
                                 className={classes.textFieldContainer}
                             >
                                 <Typography
@@ -187,7 +490,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                                     {candidate.referral}
                                 </Typography>
                             </Grid>
-                            <Grid item xs={4}>
+                            <Grid item xs={5}>
                                 <Typography
                                     component={'span'}
                                     className={classes.labelText}
@@ -197,7 +500,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                             </Grid>
                             <Grid
                                 item
-                                xs={8}
+                                xs={7}
                                 className={classes.textFieldContainer}
                             >
                                 <Typography
@@ -209,7 +512,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                             </Grid>
                             {candidate.status_code > 2 && (
                                 <>
-                                    <Grid item xs={4}>
+                                    <Grid item xs={5}>
                                         <Typography
                                             component={'span'}
                                             className={classes.labelText}
@@ -219,7 +522,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                                     </Grid>
                                     <Grid
                                         item
-                                        xs={8}
+                                        xs={7}
                                         className={classes.textFieldContainer}
                                     >
                                         <Typography
@@ -229,7 +532,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                                             {candidate.DLN && candidate.DLN}
                                         </Typography>
                                     </Grid>
-                                    <Grid item xs={4}>
+                                    <Grid item xs={5}>
                                         <Typography
                                             component={'span'}
                                             className={classes.labelText}
@@ -239,17 +542,20 @@ function CadidateForm({ open, handleClose, candidate }) {
                                     </Grid>
                                     <Grid
                                         item
-                                        xs={8}
+                                        xs={7}
                                         className={classes.textFieldContainer}
                                     >
                                         <Typography
                                             component={'span'}
                                             className={classes.labelTextValue}
                                         >
-                                            {candidate.DOB && candidate.DOB}
+                                            {candidate.DOB &&
+                                                moment(candidate.DOB).format(
+                                                    'MMMM DD, YYYY'
+                                                )}
                                         </Typography>
                                     </Grid>
-                                    <Grid item xs={4}>
+                                    <Grid item xs={5}>
                                         <Typography
                                             component={'span'}
                                             className={classes.labelText}
@@ -259,7 +565,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                                     </Grid>
                                     <Grid
                                         item
-                                        xs={8}
+                                        xs={7}
                                         className={classes.textFieldContainer}
                                     >
                                         <Typography
@@ -270,7 +576,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                                                 candidate.zip_code}
                                         </Typography>
                                     </Grid>
-                                    <Grid item xs={4}>
+                                    <Grid item xs={5}>
                                         <Typography
                                             component={'span'}
                                             className={classes.labelText}
@@ -280,7 +586,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                                     </Grid>
                                     <Grid
                                         item
-                                        xs={8}
+                                        xs={7}
                                         className={classes.textFieldContainer}
                                     >
                                         <Typography
@@ -290,7 +596,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                                             {candidate.shift && candidate.shift}
                                         </Typography>
                                     </Grid>
-                                    <Grid item xs={4}>
+                                    <Grid item xs={5}>
                                         <Typography
                                             component={'span'}
                                             className={classes.labelText}
@@ -300,7 +606,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                                     </Grid>
                                     <Grid
                                         item
-                                        xs={8}
+                                        xs={7}
                                         className={classes.textFieldContainer}
                                     >
                                         <Typography
@@ -311,62 +617,297 @@ function CadidateForm({ open, handleClose, candidate }) {
                                                 candidate.candidate_type}
                                         </Typography>
                                     </Grid>
-                                </>
-                            )}
-                            {candidate.status_code >= 3 && (
-                                <>
-                                    <Grid item xs={4}>
-                                        <Typography
-                                            component={'span'}
-                                            className={classes.labelText}
+                                    <Grid
+                                        container
+                                        direction="row"
+                                        justifyContent="center"
+                                        alignItems="center"
+                                        style={{ margin: '4px' }}
+                                    >
+                                        <Grid item xs={5}>
+                                            <Typography
+                                                component={'span'}
+                                                className={classes.labelText}
+                                            >
+                                                Profile Photo
+                                            </Typography>
+                                        </Grid>
+                                        <Grid
+                                            item
+                                            xs={7}
+                                            className={
+                                                classes.textFieldContainer
+                                            }
                                         >
-                                            Documents Check
-                                        </Typography>
+                                            <Autocomplete
+                                                onChange={(event, city) => {
+                                                    setProfileStatus(city)
+                                                    handleProfilePhotoStatus(
+                                                        city.label
+                                                    )
+                                                }}
+                                                classes={classes.textField}
+                                                disableCloseOnSelect
+                                                options={filter}
+                                                value={profileStatus}
+                                                getOptionLabel={(option) =>
+                                                    option.label
+                                                }
+                                                key="autocomplete"
+                                                getOptionSelected={(
+                                                    option,
+                                                    value
+                                                ) =>
+                                                    value === undefined ||
+                                                    value === '' ||
+                                                    option.label === value.label
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        placeholder="Profile Photo"
+                                                        margin="normal"
+                                                        variant="outlined"
+                                                        style={{ margin: 0 }}
+                                                    />
+                                                )}
+                                                fullWidth
+                                            />
+                                        </Grid>
                                     </Grid>
                                     <Grid
-                                        item
-                                        xs={8}
-                                        className={classes.textFieldContainer}
+                                        container
+                                        direction="row"
+                                        justifyContent="center"
+                                        alignItems="center"
+                                        style={{ margin: '4px' }}
                                     >
-                                        Pass
-                                    </Grid>
-                                </>
-                            )}
-                            {candidate.status_code >= 4 && (
-                                <>
-                                    <Grid item xs={4}>
-                                        <Typography
-                                            component={'span'}
-                                            className={classes.labelText}
+                                        <Grid item xs={5}>
+                                            <Typography
+                                                component={'span'}
+                                                className={classes.labelText}
+                                            >
+                                                Driving License
+                                            </Typography>
+                                        </Grid>
+                                        <Grid
+                                            item
+                                            xs={7}
+                                            className={
+                                                classes.textFieldContainer
+                                            }
                                         >
-                                            Background Check
-                                        </Typography>
+                                            <Autocomplete
+                                                onChange={(event, city) => {
+                                                    setDLStatus(city)
+                                                    handleProfileDLStatus(
+                                                        city.label
+                                                    )
+                                                }}
+                                                classes={classes.textField}
+                                                disableCloseOnSelect
+                                                options={filter}
+                                                value={DLStatus}
+                                                getOptionLabel={(option) =>
+                                                    option.label
+                                                }
+                                                key="autocomplete"
+                                                getOptionSelected={(
+                                                    option,
+                                                    value
+                                                ) =>
+                                                    value === undefined ||
+                                                    value === '' ||
+                                                    option.label === value.label
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        placeholder="Driving License"
+                                                        margin="normal"
+                                                        variant="outlined"
+                                                        style={{ margin: 0 }}
+                                                    />
+                                                )}
+                                                fullWidth
+                                            />
+                                        </Grid>
                                     </Grid>
                                     <Grid
-                                        item
-                                        xs={8}
-                                        className={classes.textFieldContainer}
+                                        container
+                                        direction="row"
+                                        justifyContent="center"
+                                        alignItems="center"
+                                        style={{ margin: '4px' }}
                                     >
-                                        Pass
-                                    </Grid>
-                                </>
-                            )}
-                            {candidate.status_code >= 5 && (
-                                <>
-                                    <Grid item xs={4}>
-                                        <Typography
-                                            component={'span'}
-                                            className={classes.labelText}
+                                        <Grid item xs={5}>
+                                            <Typography
+                                                component={'span'}
+                                                className={classes.labelText}
+                                            >
+                                                Background Check
+                                            </Typography>
+                                        </Grid>
+                                        <Grid
+                                            item
+                                            xs={7}
+                                            className={
+                                                classes.textFieldContainer
+                                            }
                                         >
-                                            Drug Test
-                                        </Typography>
+                                            <Autocomplete
+                                                onChange={(event, city) => {
+                                                    setBCStatus(city)
+                                                    handleProfileBCStatus(
+                                                        city.label
+                                                    )
+                                                }}
+                                                value={BCStatus}
+                                                classes={classes.textField}
+                                                disableCloseOnSelect
+                                                options={filter}
+                                                getOptionLabel={(option) =>
+                                                    option.label
+                                                }
+                                                key="autocomplete"
+                                                getOptionSelected={(
+                                                    option,
+                                                    value
+                                                ) =>
+                                                    value === undefined ||
+                                                    value === '' ||
+                                                    option.label === value.label
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        placeholder="Background Check"
+                                                        margin="normal"
+                                                        variant="outlined"
+                                                        style={{ margin: 0 }}
+                                                    />
+                                                )}
+                                                fullWidth
+                                            />
+                                        </Grid>
                                     </Grid>
                                     <Grid
-                                        item
-                                        xs={8}
-                                        className={classes.textFieldContainer}
+                                        container
+                                        direction="row"
+                                        justifyContent="center"
+                                        alignItems="center"
+                                        style={{ margin: '4px' }}
                                     >
-                                        Pass
+                                        <Grid item xs={5}>
+                                            <Typography
+                                                component={'span'}
+                                                className={classes.labelText}
+                                            >
+                                                Training
+                                            </Typography>
+                                        </Grid>
+                                        <Grid
+                                            item
+                                            xs={7}
+                                            className={
+                                                classes.textFieldContainer
+                                            }
+                                        >
+                                            <Autocomplete
+                                                onChange={(event, city) => {
+                                                    console.log(city)
+                                                    setTrainingStatus(city)
+                                                    handleProfileTrainingStatus(
+                                                        city.label
+                                                    )
+                                                }}
+                                                value={trainingStatus}
+                                                classes={classes.textField}
+                                                disableCloseOnSelect
+                                                options={trainingList}
+                                                getOptionLabel={(option) =>
+                                                    option.label
+                                                }
+                                                key="autocomplete"
+                                                getOptionSelected={(
+                                                    option,
+                                                    value
+                                                ) =>
+                                                    value === undefined ||
+                                                    value === '' ||
+                                                    option.label === value.label
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        placeholder="Training"
+                                                        margin="normal"
+                                                        variant="outlined"
+                                                        style={{ margin: 0 }}
+                                                    />
+                                                )}
+                                                fullWidth
+                                            />
+                                        </Grid>
+                                    </Grid>
+                                    <Grid
+                                        container
+                                        direction="row"
+                                        justifyContent="center"
+                                        alignItems="center"
+                                        style={{ margin: '4px' }}
+                                    >
+                                        <Grid item xs={5}>
+                                            <Typography
+                                                component={'span'}
+                                                className={classes.labelText}
+                                            >
+                                                Hiring Status
+                                            </Typography>
+                                        </Grid>
+                                        <Grid
+                                            item
+                                            xs={7}
+                                            className={
+                                                classes.textFieldContainer
+                                            }
+                                        >
+                                            <Autocomplete
+                                                onChange={(event, city) => {
+                                                    console.log(city)
+                                                    setHiringStatus(city)
+                                                    handleProfileHiringStatus(
+                                                        city.label
+                                                    )
+                                                }}
+                                                value={hiringStatus}
+                                                classes={classes.textField}
+                                                disableCloseOnSelect
+                                                options={hiringList}
+                                                getOptionLabel={(option) =>
+                                                    option.label
+                                                }
+                                                key="autocomplete"
+                                                getOptionSelected={(
+                                                    option,
+                                                    value
+                                                ) =>
+                                                    value === undefined ||
+                                                    value === '' ||
+                                                    option.label === value.label
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        placeholder="Hiring"
+                                                        margin="normal"
+                                                        variant="outlined"
+                                                        style={{ margin: 0 }}
+                                                    />
+                                                )}
+                                                fullWidth
+                                            />
+                                        </Grid>
                                     </Grid>
                                 </>
                             )}
