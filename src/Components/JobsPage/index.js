@@ -523,7 +523,9 @@ function JobsPage() {
                                             }}
                                         />
                                         <Typography component={'span'}>
-                                            0
+                                            {job.candidate_profiles
+                                                ? job.candidate_profiles.length
+                                                : `0`}
                                         </Typography>
                                     </Box>
                                     <Box
@@ -541,7 +543,16 @@ function JobsPage() {
                                             }}
                                         />
                                         <Typography component={'span'}>
-                                            0
+                                            {job.candidate_profiles
+                                                ? job.candidate_profiles.filter(
+                                                      (cand) =>
+                                                          cand.status_code ===
+                                                              1 ||
+                                                          cand.status_code ===
+                                                              0 ||
+                                                          cand.status_code === 3
+                                                  ).length
+                                                : `0`}
                                         </Typography>
                                     </Box>
                                     <Box
@@ -559,7 +570,12 @@ function JobsPage() {
                                             }}
                                         />
                                         <Typography component={'span'}>
-                                            0
+                                            {job.candidate_profiles
+                                                ? job.candidate_profiles.filter(
+                                                      (cand) =>
+                                                          cand.status_code === 4
+                                                  ).length
+                                                : `0`}
                                         </Typography>
                                     </Box>
                                     <Box
@@ -577,7 +593,12 @@ function JobsPage() {
                                             }}
                                         />
                                         <Typography component={'span'}>
-                                            0
+                                            {job.candidate_profiles
+                                                ? job.candidate_profiles.filter(
+                                                      (cand) =>
+                                                          cand.status_code === 2
+                                                  ).length
+                                                : `0`}
                                         </Typography>
                                     </Box>
                                 </Grid>
@@ -590,7 +611,9 @@ function JobsPage() {
                                         fontWeight: 'bold',
                                     }}
                                 >
-                                    {formatedDate}
+                                    {moment(job.createdAt).format(
+                                        'MMMM DD, YYYY'
+                                    )}
                                 </Typography>
                             </Grid>
                             <Grid item xs={2} style={{}}>

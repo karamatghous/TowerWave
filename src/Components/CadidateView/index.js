@@ -50,19 +50,19 @@ const filter = [
 
 const hiringList = [
     {
-        value: 'Pending',
+        value: 3,
         label: 'Pending',
     },
     {
-        value: 'Hired',
+        value: 4,
         label: 'Hired',
     },
     {
-        value: 'Terminated',
+        value: 5,
         label: 'Terminated',
     },
     {
-        value: 'Rejected',
+        value: 2,
         label: 'Rejected',
     },
 ]
@@ -101,6 +101,12 @@ function CadidateForm({ open, handleClose, candidate }) {
     const [DLStatus, setDLStatus] = React.useState(
         candidate.DLN_status
             ? filter.find((f) => f.label === candidate.DLN_status)
+            : filter[0]
+    )
+
+    const [DTStatus, setDTStatus] = React.useState(
+        candidate.drug_test
+            ? filter.find((f) => f.label === candidate.drug_test)
             : filter[0]
     )
 
@@ -154,15 +160,22 @@ function CadidateForm({ open, handleClose, candidate }) {
                 ? hiringList.find((f) => f.label === candidate.hire_or_not)
                 : hiringList[0]
         )
+        setDTStatus(
+            candidate.drug_test
+                ? filter.find((f) => f.label === candidate.drug_test)
+                : filter[0]
+        )
     }, [candidate])
 
-    const handleProfileHiringStatus = (value) => {
+    const handleProfileHiringStatus = (result) => {
         setLoading(true)
         const data = {
             id: candidate.id,
             attributes: {
-                hire_or_not: value,
-                hire_date: new Date().getUTCDate(),
+                hire_or_not: result.label,
+                hire_date: new Date().toISOString(),
+                status: result.label,
+                status_code: result.value,
             },
         }
         try {
@@ -243,6 +256,46 @@ function CadidateForm({ open, handleClose, candidate }) {
             id: candidate.id,
             attributes: {
                 BGC: value,
+            },
+        }
+        try {
+            axiosClient
+                .put('user/profile/updateCandidate', data, httpOptions)
+                .then((response) => {
+                    setLoading(false)
+                    if (response.status === 200) {
+                        const res = response.data.data
+                        enqueueSnackbar('Profile Updated Successfully', {
+                            variant: 'success',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                    } else {
+                        enqueueSnackbar('Failed to Update Profile', {
+                            variant: 'error',
+                            autoHideDuration: 3000,
+                            preventDuplicate: true,
+                        })
+                        // setError(true)
+                    }
+                })
+        } catch (err) {
+            setLoading(false)
+            enqueueSnackbar('Failed to Update Profile', {
+                variant: 'error',
+                autoHideDuration: 3000,
+                preventDuplicate: true,
+            })
+            console.log(err)
+        }
+    }
+
+    const handleProfileDTStatus = (value) => {
+        setLoading(true)
+        const data = {
+            id: candidate.id,
+            attributes: {
+                drug_test: value,
             },
         }
         try {
@@ -803,6 +856,64 @@ function CadidateForm({ open, handleClose, candidate }) {
                                                 component={'span'}
                                                 className={classes.labelText}
                                             >
+                                                Drug Test
+                                            </Typography>
+                                        </Grid>
+                                        <Grid
+                                            item
+                                            xs={7}
+                                            className={
+                                                classes.textFieldContainer
+                                            }
+                                        >
+                                            <Autocomplete
+                                                onChange={(event, city) => {
+                                                    setDTStatus(city)
+                                                    handleProfileDTStatus(
+                                                        city.label
+                                                    )
+                                                }}
+                                                value={DTStatus}
+                                                classes={classes.textField}
+                                                disableCloseOnSelect
+                                                options={filter}
+                                                getOptionLabel={(option) =>
+                                                    option.label
+                                                }
+                                                key="autocomplete"
+                                                getOptionSelected={(
+                                                    option,
+                                                    value
+                                                ) =>
+                                                    value === undefined ||
+                                                    value === '' ||
+                                                    option.label === value.label
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        placeholder="Drug Test"
+                                                        margin="normal"
+                                                        variant="outlined"
+                                                        style={{ margin: 0 }}
+                                                    />
+                                                )}
+                                                fullWidth
+                                            />
+                                        </Grid>
+                                    </Grid>
+                                    <Grid
+                                        container
+                                        direction="row"
+                                        justifyContent="center"
+                                        alignItems="center"
+                                        style={{ margin: '4px' }}
+                                    >
+                                        <Grid item xs={5}>
+                                            <Typography
+                                                component={'span'}
+                                                className={classes.labelText}
+                                            >
                                                 Training
                                             </Typography>
                                         </Grid>
@@ -877,7 +988,7 @@ function CadidateForm({ open, handleClose, candidate }) {
                                                     console.log(city)
                                                     setHiringStatus(city)
                                                     handleProfileHiringStatus(
-                                                        city.label
+                                                        city
                                                     )
                                                 }}
                                                 value={hiringStatus}
