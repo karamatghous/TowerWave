@@ -107,6 +107,54 @@ const trainingList = [
     },
 ]
 
+const partnerOptions = [
+    {
+        label: 'Uber',
+        value: 'Uber',
+    },
+    {
+        label: 'Lyft',
+        value: 'Lyft',
+    },
+    {
+        label: 'Waymo',
+        value: 'Waymo',
+    },
+]
+
+const shiftOptions = [
+    {
+        label: 'Weekday 1st Shift',
+        value: 'Weekday 1st Shift',
+        code: 1,
+    },
+    {
+        label: 'Weekday 2nd Shift',
+        value: 'Weekday 2nd Shift',
+        code: 2,
+    },
+    {
+        label: 'Weekday 3rd Shift',
+        value: 'Weekday 3rd Shift',
+        code: 3,
+    },
+    {
+        label: 'Weekend 1st Shift',
+        value: 'Weekend 1st Shift',
+        code: 4,
+    },
+    {
+        label: 'Weekend 2nd Shift',
+        value: 'Weekend 2nd Shift',
+        code: 5,
+    },
+    {
+        label: 'Weekend 3rd Shift',
+        value: 'Weekend 3rd Shift',
+        code: 6,
+    },
+]
+
 function HomePage() {
     const date = new Date()
     const formatedDate = moment(date).format('MMMM DD, YYYY')
@@ -139,6 +187,8 @@ function HomePage() {
         DT: '',
         Training: '',
         hiring: '',
+        partner: '',
+        shift: '',
     })
     const [loading, setLoading] = React.useState(false)
     const navigate = useNavigate()
@@ -829,6 +879,86 @@ function HomePage() {
                                     {...params}
                                     label="Select a Job"
                                     placeholder="Job"
+                                    margin="normal"
+                                    variant="outlined"
+                                />
+                            )}
+                            fullWidth
+                        />
+                    </ListItem>
+
+                    <ListItem
+                        key={'partner'}
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            paddingTop: 0,
+                            paddingBottom: 0,
+                        }}
+                    >
+                        <Autocomplete
+                            onChange={(event, job) => {
+                                setFilter({
+                                    ...filter,
+                                    partner: job,
+                                })
+                            }}
+                            classes={classes.textField}
+                            disableCloseOnSelect
+                            options={partnerOptions}
+                            getOptionLabel={(option) => option.label}
+                            key="autocomplete"
+                            getOptionSelected={(option, value) =>
+                                value === undefined ||
+                                value === '' ||
+                                option.label === value.label
+                            }
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Partner"
+                                    placeholder="Select a Partner"
+                                    margin="normal"
+                                    variant="outlined"
+                                />
+                            )}
+                            fullWidth
+                        />
+                    </ListItem>
+
+                    <ListItem
+                        key={'filter'}
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            paddingTop: 0,
+                            paddingBottom: 0,
+                        }}
+                    >
+                        <Autocomplete
+                            onChange={(event, job) => {
+                                setFilter({
+                                    ...filter,
+                                    shift: job,
+                                })
+                            }}
+                            classes={classes.textField}
+                            disableCloseOnSelect
+                            options={shiftOptions}
+                            getOptionLabel={(option) => option.label}
+                            key="autocomplete"
+                            getOptionSelected={(option, value) =>
+                                value === undefined ||
+                                value === '' ||
+                                option.label === value.label
+                            }
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Shift"
+                                    placeholder="Select a Shift"
                                     margin="normal"
                                     variant="outlined"
                                 />

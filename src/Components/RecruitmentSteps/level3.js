@@ -115,24 +115,36 @@ function Level2({ setIndex, location, client }) {
 
     const currencies = [
         {
-            value: 'Day Shift',
-            label: 'Day Shift',
+            label: 'Weekday 1st Shift',
+            value: 'Weekday 1st Shift',
+            code: 1,
         },
         {
-            value: 'Afternoon/Evening Shift',
-            label: 'Afternoon/Evening Shift',
+            label: 'Weekday 2nd Shift',
+            value: 'Weekday 2nd Shift',
+            code: 2,
         },
         {
-            value: 'Overnight Shift (where applicable)',
-            label: 'Overnight Shift (where applicable)',
+            label: 'Weekday 3rd Shift',
+            value: 'Weekday 3rd Shift',
+            code: 3,
         },
         {
-            value: 'Weekend Shift',
-            label: 'Weekend Shift',
+            label: 'Weekend 1st Shift',
+            value: 'Weekend 1st Shift',
+            code: 4,
+        },
+        {
+            label: 'Weekend 2nd Shift',
+            value: 'Weekend 2nd Shift',
+            code: 5,
+        },
+        {
+            label: 'Weekend 3rd Shift',
+            value: 'Weekend 3rd Shift',
+            code: 6,
         },
     ]
-
-    console.log(type, shift)
 
     const setDLDetail = () => {
         const data = {

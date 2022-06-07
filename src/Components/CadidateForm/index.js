@@ -28,6 +28,54 @@ import { axiosClient, httpOptions } from '../../config'
 import { useSnackbar } from 'notistack'
 import Loader from '../Loader'
 
+const partnerOptions = [
+    {
+        label: 'Uber',
+        value: 'Uber',
+    },
+    {
+        label: 'Lyft',
+        value: 'Lyft',
+    },
+    {
+        label: 'Waymo',
+        value: 'Waymo',
+    },
+]
+
+const shiftOptions = [
+    {
+        label: 'Weekday 1st Shift',
+        value: 'Weekday 1st Shift',
+        code: 1,
+    },
+    {
+        label: 'Weekday 2nd Shift',
+        value: 'Weekday 2nd Shift',
+        code: 2,
+    },
+    {
+        label: 'Weekday 3rd Shift',
+        value: 'Weekday 3rd Shift',
+        code: 3,
+    },
+    {
+        label: 'Weekend 1st Shift',
+        value: 'Weekend 1st Shift',
+        code: 4,
+    },
+    {
+        label: 'Weekend 2nd Shift',
+        value: 'Weekend 2nd Shift',
+        code: 5,
+    },
+    {
+        label: 'Weekend 3rd Shift',
+        value: 'Weekend 3rd Shift',
+        code: 6,
+    },
+]
+
 function CadidateForm({ open, handleClose }) {
     const [cityList, setCityList] = React.useState([])
     const [state, setState] = React.useState('')
@@ -53,6 +101,10 @@ function CadidateForm({ open, handleClose }) {
             phone_number: formInputs.phone,
             status: 'applied',
             status_code: 0,
+            state_name: formInputs.state.name,
+            city_name: formInputs.city.name,
+            service: formInputs.partner,
+            shift: formInputs.shift,
         }
         axiosClient
             .post('user/profile/create', data)
@@ -300,15 +352,6 @@ function CadidateForm({ open, handleClose }) {
                                             <Autocomplete
                                                 onChange={(event, job) => {
                                                     onChange(job)
-                                                    console.log(job)
-                                                    setValue(
-                                                        'state',
-                                                        job.state_name
-                                                    )
-                                                    setValue(
-                                                        'city',
-                                                        job.city_name
-                                                    )
                                                 }}
                                                 value={value}
                                                 classes={classes.textField}
@@ -349,7 +392,7 @@ function CadidateForm({ open, handleClose }) {
                                     className={classes.textFieldContainer}
                                 >
                                     <Typography className={classes.labelText}>
-                                        Job State
+                                        State
                                     </Typography>
                                     <Controller
                                         control={control}
@@ -358,21 +401,41 @@ function CadidateForm({ open, handleClose }) {
                                         render={({
                                             field: { onChange, value },
                                         }) => (
-                                            <TextField
-                                                value={value}
-                                                variant="outlined"
-                                                placeholder="State"
-                                                fullWidth={true}
-                                                classes={classes.textField}
-                                                error={!!errors.state}
-                                                helperText={
-                                                    errors.state &&
-                                                    'state required'
-                                                }
-                                                disabled={true}
-                                                onChange={(event) => {
-                                                    onChange(event.target.value)
+                                            <Autocomplete
+                                                onChange={(event, state) => {
+                                                    setState(state.isoCode)
+                                                    onChange(state)
                                                 }}
+                                                value={value}
+                                                classes={classes.textField}
+                                                options={State.getStatesOfCountry(
+                                                    'US'
+                                                )}
+                                                getOptionLabel={(option) =>
+                                                    option.name
+                                                }
+                                                getOptionSelected={(
+                                                    option,
+                                                    value
+                                                ) =>
+                                                    value === undefined ||
+                                                    value === '' ||
+                                                    option.name === value.name
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        placeholder="state"
+                                                        margin="normal"
+                                                        variant="outlined"
+                                                        error={!!errors.state}
+                                                        helperText={
+                                                            errors.state &&
+                                                            'state required'
+                                                        }
+                                                        required
+                                                    />
+                                                )}
                                             />
                                         )}
                                     />
@@ -383,7 +446,7 @@ function CadidateForm({ open, handleClose }) {
                                     className={classes.textFieldContainer}
                                 >
                                     <Typography className={classes.labelText}>
-                                        Job City
+                                        City
                                     </Typography>
                                     <Controller
                                         control={control}
@@ -392,21 +455,143 @@ function CadidateForm({ open, handleClose }) {
                                         render={({
                                             field: { onChange, value },
                                         }) => (
-                                            <TextField
-                                                value={value}
-                                                variant="outlined"
-                                                placeholder="city"
-                                                fullWidth={true}
-                                                classes={classes.textField}
-                                                error={!!errors.city}
-                                                disabled={true}
-                                                helperText={
-                                                    errors.city &&
-                                                    'city required'
-                                                }
-                                                onChange={(event) => {
-                                                    onChange(event.target.value)
+                                            <Autocomplete
+                                                onChange={(event, city) => {
+                                                    onChange(city)
                                                 }}
+                                                value={value}
+                                                classes={classes.textField}
+                                                options={City.getCitiesOfState(
+                                                    'US',
+                                                    state
+                                                )}
+                                                getOptionLabel={(option) =>
+                                                    option.name
+                                                }
+                                                getOptionSelected={(
+                                                    option,
+                                                    value
+                                                ) =>
+                                                    value === undefined ||
+                                                    value === '' ||
+                                                    option.name === value.name
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        placeholder="city"
+                                                        margin="normal"
+                                                        variant="outlined"
+                                                        error={!!errors.city}
+                                                        helperText={
+                                                            errors.city &&
+                                                            'city required'
+                                                        }
+                                                        required
+                                                    />
+                                                )}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid
+                                    item
+                                    xs={12}
+                                    className={classes.textFieldContainer}
+                                >
+                                    <Typography className={classes.labelText}>
+                                        Partner
+                                    </Typography>
+                                    <Controller
+                                        control={control}
+                                        name="partner"
+                                        rules={{ required: true }}
+                                        render={({
+                                            field: { onChange, value },
+                                        }) => (
+                                            <Autocomplete
+                                                onChange={(event, partner) => {
+                                                    onChange(partner)
+                                                }}
+                                                value={value}
+                                                classes={classes.textField}
+                                                options={partnerOptions}
+                                                getOptionLabel={(option) =>
+                                                    option.label
+                                                }
+                                                getOptionSelected={(
+                                                    option,
+                                                    value
+                                                ) =>
+                                                    value === undefined ||
+                                                    value === '' ||
+                                                    option.label === value.label
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        placeholder="Select a Partner"
+                                                        margin="normal"
+                                                        variant="outlined"
+                                                        error={!!errors.partner}
+                                                        helperText={
+                                                            errors.partner &&
+                                                            'partner required'
+                                                        }
+                                                        required
+                                                    />
+                                                )}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid
+                                    item
+                                    xs={12}
+                                    className={classes.textFieldContainer}
+                                >
+                                    <Typography className={classes.labelText}>
+                                        Shift
+                                    </Typography>
+                                    <Controller
+                                        control={control}
+                                        name="shift"
+                                        rules={{ required: true }}
+                                        render={({
+                                            field: { onChange, value },
+                                        }) => (
+                                            <Autocomplete
+                                                onChange={(event, shift) => {
+                                                    onChange(shift)
+                                                }}
+                                                value={value}
+                                                classes={classes.textField}
+                                                options={shiftOptions}
+                                                getOptionLabel={(option) =>
+                                                    option.label
+                                                }
+                                                getOptionSelected={(
+                                                    option,
+                                                    value
+                                                ) =>
+                                                    value === undefined ||
+                                                    value === '' ||
+                                                    option.label === value.label
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        placeholder="Select a Shift"
+                                                        margin="normal"
+                                                        variant="outlined"
+                                                        error={!!errors.shift}
+                                                        helperText={
+                                                            errors.shift &&
+                                                            'shift required'
+                                                        }
+                                                        required
+                                                    />
+                                                )}
                                             />
                                         )}
                                     />
@@ -422,6 +607,7 @@ function CadidateForm({ open, handleClose }) {
                                         type="submit"
                                         variant="contained"
                                         color="grey"
+                                        onClick={handleClose}
                                     >
                                         cancel
                                     </Button>

@@ -43,6 +43,54 @@ import ListItemText from '@mui/material/ListItemText'
 import PersonIcon from '@mui/icons-material/Person'
 import { blue } from '@mui/material/colors'
 
+const partnerOptions = [
+    {
+        label: 'Uber',
+        value: 'Uber',
+    },
+    {
+        label: 'Lyft',
+        value: 'Lyft',
+    },
+    {
+        label: 'Waymo',
+        value: 'Waymo',
+    },
+]
+
+const shiftOptions = [
+    {
+        label: 'Weekday 1st Shift',
+        value: 'Weekday 1st Shift',
+        code: 1,
+    },
+    {
+        label: 'Weekday 2nd Shift',
+        value: 'Weekday 2nd Shift',
+        code: 2,
+    },
+    {
+        label: 'Weekday 3rd Shift',
+        value: 'Weekday 3rd Shift',
+        code: 3,
+    },
+    {
+        label: 'Weekend 1st Shift',
+        value: 'Weekend 1st Shift',
+        code: 4,
+    },
+    {
+        label: 'Weekend 2nd Shift',
+        value: 'Weekend 2nd Shift',
+        code: 5,
+    },
+    {
+        label: 'Weekend 3rd Shift',
+        value: 'Weekend 3rd Shift',
+        code: 6,
+    },
+]
+
 const sources = [
     { label: 'Indeed', value: 'Indeed' },
     { label: 'Facebook', value: 'Facebook' },
@@ -55,6 +103,8 @@ function JobsPage() {
         city: [],
         state: [],
         user: [],
+        partner: {},
+        shift: {},
     })
     const [userList, setUserList] = React.useState([])
     const [search, setSearch] = React.useState('')
@@ -86,6 +136,8 @@ function JobsPage() {
             state_code: job.state_code,
             state_name: job.state_name,
             city_name: job.city_name,
+            shift: job.shift,
+            partner: job.partner,
         }
         axiosClient
             .post('job/application/create', data, httpOptions)
@@ -379,6 +431,90 @@ function JobsPage() {
                                         fullWidth
                                     />
                                 </ListItem>
+                                <ListItem
+                                    key={'partnerfilter'}
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        paddingTop: 0,
+                                        paddingBottom: 0,
+                                    }}
+                                >
+                                    <Autocomplete
+                                        onChange={(event, partner) => {
+                                            setFilter({
+                                                ...filter,
+                                                partner: partner,
+                                            })
+                                        }}
+                                        classes={classes.textField}
+                                        disableCloseOnSelect
+                                        options={partnerOptions}
+                                        getOptionLabel={(option) =>
+                                            option.label
+                                        }
+                                        key="autocomplete"
+                                        getOptionSelected={(option, value) =>
+                                            value === undefined ||
+                                            value === '' ||
+                                            option.label === value.label
+                                        }
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Partner"
+                                                placeholder="Select a partner"
+                                                margin="normal"
+                                                variant="outlined"
+                                            />
+                                        )}
+                                        fullWidth
+                                    />
+                                </ListItem>
+
+                                <ListItem
+                                    key={'partnerfilter'}
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        paddingTop: 0,
+                                        paddingBottom: 0,
+                                    }}
+                                >
+                                    <Autocomplete
+                                        onChange={(event, shift) => {
+                                            setFilter({
+                                                ...filter,
+                                                shift: shift,
+                                            })
+                                        }}
+                                        classes={classes.textField}
+                                        disableCloseOnSelect
+                                        options={shiftOptions}
+                                        getOptionLabel={(option) =>
+                                            option.label
+                                        }
+                                        key="autocomplete"
+                                        getOptionSelected={(option, value) =>
+                                            value === undefined ||
+                                            value === '' ||
+                                            option.label === value.label
+                                        }
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Shift"
+                                                placeholder="Select a shift"
+                                                margin="normal"
+                                                variant="outlined"
+                                            />
+                                        )}
+                                        fullWidth
+                                    />
+                                </ListItem>
+
                                 <ListItem
                                     key="btn"
                                     style={{

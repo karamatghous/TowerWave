@@ -23,6 +23,54 @@ import { axiosClient, httpOptions } from '../../config'
 import { useSnackbar } from 'notistack'
 import Loader from '../Loader'
 
+const partnerOptions = [
+    {
+        label: 'Uber',
+        value: 'Uber',
+    },
+    {
+        label: 'Lyft',
+        value: 'Lyft',
+    },
+    {
+        label: 'Waymo',
+        value: 'Waymo',
+    },
+]
+
+const shiftOptions = [
+    {
+        label: 'Weekday 1st Shift',
+        value: 'Weekday 1st Shift',
+        code: 1,
+    },
+    {
+        label: 'Weekday 2nd Shift',
+        value: 'Weekday 2nd Shift',
+        code: 2,
+    },
+    {
+        label: 'Weekday 3rd Shift',
+        value: 'Weekday 3rd Shift',
+        code: 3,
+    },
+    {
+        label: 'Weekend 1st Shift',
+        value: 'Weekend 1st Shift',
+        code: 4,
+    },
+    {
+        label: 'Weekend 2nd Shift',
+        value: 'Weekend 2nd Shift',
+        code: 5,
+    },
+    {
+        label: 'Weekend 3rd Shift',
+        value: 'Weekend 3rd Shift',
+        code: 6,
+    },
+]
+
 function EditJobForm({ open, handleClose, job }) {
     const [state, setState] = React.useState('')
     const classes = JobFormStyles
@@ -42,6 +90,8 @@ function EditJobForm({ open, handleClose, job }) {
             state_code: formInputs.state.isoCode,
             state_name: formInputs.state.name,
             city_name: formInputs.city.name,
+            shift: formInputs.shift.value,
+            partner: formInputs.partner.value,
         }
         axiosClient
             .post('job/application/edit', data, httpOptions)
@@ -71,7 +121,6 @@ function EditJobForm({ open, handleClose, job }) {
                 })
             })
     }
-
     const {
         control,
         handleSubmit,
@@ -108,6 +157,14 @@ function EditJobForm({ open, handleClose, job }) {
             State.getStatesOfCountry('US').find(
                 (state) => state.isoCode === job?.state_code
             )
+        )
+        setValue(
+            'partner',
+            partnerOptions.find((p) => p.label === job?.partner)
+        )
+        setValue(
+            'shift',
+            shiftOptions.find((p) => p.label === job?.shift)
         )
     }, [job])
 
@@ -286,29 +343,98 @@ function EditJobForm({ open, handleClose, job }) {
                                     className={classes.textFieldContainer}
                                 >
                                     <Typography className={classes.labelText}>
-                                        Enter Your Description
+                                        Partner
                                     </Typography>
                                     <Controller
                                         control={control}
-                                        name="description"
+                                        name="partner"
                                         rules={{ required: true }}
                                         render={({
                                             field: { onChange, value },
                                         }) => (
-                                            <TextField
-                                                variant="outlined"
-                                                placeholder="Description"
-                                                fullWidth={true}
-                                                classes={classes.textField}
-                                                value={value}
-                                                error={!!errors.description}
-                                                helperText={
-                                                    errors.description &&
-                                                    'description required'
-                                                }
-                                                onChange={(event) => {
-                                                    onChange(event.target.value)
+                                            <Autocomplete
+                                                onChange={(event, partner) => {
+                                                    onChange(partner)
                                                 }}
+                                                value={value}
+                                                classes={classes.textField}
+                                                options={partnerOptions}
+                                                getOptionLabel={(option) =>
+                                                    option.label
+                                                }
+                                                getOptionSelected={(
+                                                    option,
+                                                    value
+                                                ) =>
+                                                    value === undefined ||
+                                                    value === '' ||
+                                                    option.label === value.label
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        placeholder="Select a Partner"
+                                                        margin="normal"
+                                                        variant="outlined"
+                                                        error={!!errors.partner}
+                                                        helperText={
+                                                            errors.partner &&
+                                                            'partner required'
+                                                        }
+                                                        required
+                                                    />
+                                                )}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid
+                                    item
+                                    xs={12}
+                                    className={classes.textFieldContainer}
+                                >
+                                    <Typography className={classes.labelText}>
+                                        Shift
+                                    </Typography>
+                                    <Controller
+                                        control={control}
+                                        name="shift"
+                                        rules={{ required: true }}
+                                        render={({
+                                            field: { onChange, value },
+                                        }) => (
+                                            <Autocomplete
+                                                onChange={(event, shift) => {
+                                                    onChange(shift)
+                                                }}
+                                                value={value}
+                                                classes={classes.textField}
+                                                options={shiftOptions}
+                                                getOptionLabel={(option) =>
+                                                    option.label
+                                                }
+                                                getOptionSelected={(
+                                                    option,
+                                                    value
+                                                ) =>
+                                                    value === undefined ||
+                                                    value === '' ||
+                                                    option.label === value.label
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        placeholder="Select a Shift"
+                                                        margin="normal"
+                                                        variant="outlined"
+                                                        error={!!errors.shift}
+                                                        helperText={
+                                                            errors.shift &&
+                                                            'shift required'
+                                                        }
+                                                        required
+                                                    />
+                                                )}
                                             />
                                         )}
                                     />

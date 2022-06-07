@@ -23,6 +23,39 @@ import { axiosClient, httpOptions } from '../../config'
 import Loader from '../Loader'
 import { useSnackbar } from 'notistack'
 
+const shiftOptions = [
+    {
+        label: 'Weekday 1st Shift',
+        value: 'Weekday 1st Shift',
+        code: 1,
+    },
+    {
+        label: 'Weekday 2nd Shift',
+        value: 'Weekday 2nd Shift',
+        code: 2,
+    },
+    {
+        label: 'Weekday 3rd Shift',
+        value: 'Weekday 3rd Shift',
+        code: 3,
+    },
+    {
+        label: 'Weekend 1st Shift',
+        value: 'Weekend 1st Shift',
+        code: 4,
+    },
+    {
+        label: 'Weekend 2nd Shift',
+        value: 'Weekend 2nd Shift',
+        code: 5,
+    },
+    {
+        label: 'Weekend 3rd Shift',
+        value: 'Weekend 3rd Shift',
+        code: 6,
+    },
+]
+
 function EditLocationInfoForm({ open, handleClose, row }) {
     const classes = JobFormStyles
     const [loading, setLoading] = React.useState(false)
@@ -36,7 +69,7 @@ function EditLocationInfoForm({ open, handleClose, row }) {
             state_code: row.state_code,
             hourly_rate: formInputs.rate,
             signin_bonas: formInputs.bonas,
-            shift_detail: formInputs.description,
+            shift_detail: formInputs.shift.label,
         }
         axiosClient
             .post('user/profile/updateUserSettingLocation', data, httpOptions)
@@ -80,7 +113,6 @@ function EditLocationInfoForm({ open, handleClose, row }) {
         defaultValues: {
             state: null,
             city: null,
-            description: '',
             rate: 0,
             bonas: 0,
         },
@@ -89,9 +121,12 @@ function EditLocationInfoForm({ open, handleClose, row }) {
     React.useEffect(() => {
         setValue('state', row.state)
         setValue('city', row.city)
-        setValue('description', row.shift_detail)
         setValue('rate', row.hourly_rate)
         setValue('bonas', row.signin_bonas)
+        setValue(
+            'shift',
+            shiftOptions.find((p) => p.label === row.shift_detail)
+        )
     }, [row])
     return (
         <Grid>
@@ -263,29 +298,47 @@ function EditLocationInfoForm({ open, handleClose, row }) {
                                     className={classes.textFieldContainer}
                                 >
                                     <Typography className={classes.labelText}>
-                                        Enter Your Description
+                                        Shift
                                     </Typography>
                                     <Controller
                                         control={control}
-                                        name="description"
+                                        name="shift"
                                         rules={{ required: true }}
                                         render={({
                                             field: { onChange, value },
                                         }) => (
-                                            <TextField
-                                                variant="outlined"
-                                                placeholder="Description"
-                                                fullWidth={true}
-                                                classes={classes.textField}
-                                                value={value}
-                                                error={!!errors.description}
-                                                helperText={
-                                                    errors.description &&
-                                                    'description required'
-                                                }
-                                                onChange={(event) => {
-                                                    onChange(event.target.value)
+                                            <Autocomplete
+                                                onChange={(event, shift) => {
+                                                    onChange(shift)
                                                 }}
+                                                value={value}
+                                                classes={classes.textField}
+                                                options={shiftOptions}
+                                                getOptionLabel={(option) =>
+                                                    option.label
+                                                }
+                                                getOptionSelected={(
+                                                    option,
+                                                    value
+                                                ) =>
+                                                    value === undefined ||
+                                                    value === '' ||
+                                                    option.label === value.label
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        placeholder="Select a Shift"
+                                                        margin="normal"
+                                                        variant="outlined"
+                                                        error={!!errors.shift}
+                                                        helperText={
+                                                            errors.shift &&
+                                                            'shift required'
+                                                        }
+                                                        required
+                                                    />
+                                                )}
                                             />
                                         )}
                                     />

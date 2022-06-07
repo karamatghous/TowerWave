@@ -23,6 +23,39 @@ import { axiosClient, httpOptions } from '../../config'
 import Loader from '../Loader'
 import { useSnackbar } from 'notistack'
 
+const shiftOptions = [
+    {
+        label: 'Weekday 1st Shift',
+        value: 'Weekday 1st Shift',
+        code: 1,
+    },
+    {
+        label: 'Weekday 2nd Shift',
+        value: 'Weekday 2nd Shift',
+        code: 2,
+    },
+    {
+        label: 'Weekday 3rd Shift',
+        value: 'Weekday 3rd Shift',
+        code: 3,
+    },
+    {
+        label: 'Weekend 1st Shift',
+        value: 'Weekend 1st Shift',
+        code: 4,
+    },
+    {
+        label: 'Weekend 2nd Shift',
+        value: 'Weekend 2nd Shift',
+        code: 5,
+    },
+    {
+        label: 'Weekend 3rd Shift',
+        value: 'Weekend 3rd Shift',
+        code: 6,
+    },
+]
+
 function CreateJobForm({ open, handleClose }) {
     const [state, setState] = React.useState('')
     const classes = JobFormStyles
@@ -36,7 +69,7 @@ function CreateJobForm({ open, handleClose }) {
             state_code: formInputs.state.isoCode,
             hourly_rate: formInputs.rate,
             signin_bonas: formInputs.bonas,
-            shift_detail: formInputs.description,
+            shift_detail: formInputs.shift?.label,
         }
         axiosClient
             .post('user/profile/createSettingLocation', data, httpOptions)
@@ -307,29 +340,47 @@ function CreateJobForm({ open, handleClose }) {
                                     className={classes.textFieldContainer}
                                 >
                                     <Typography className={classes.labelText}>
-                                        Enter Your Description
+                                        Shift
                                     </Typography>
                                     <Controller
                                         control={control}
-                                        name="description"
+                                        name="shift"
                                         rules={{ required: true }}
                                         render={({
                                             field: { onChange, value },
                                         }) => (
-                                            <TextField
-                                                variant="outlined"
-                                                placeholder="Description"
-                                                fullWidth={true}
-                                                classes={classes.textField}
-                                                value={value}
-                                                error={!!errors.description}
-                                                helperText={
-                                                    errors.description &&
-                                                    'description required'
-                                                }
-                                                onChange={(event) => {
-                                                    onChange(event.target.value)
+                                            <Autocomplete
+                                                onChange={(event, shift) => {
+                                                    onChange(shift)
                                                 }}
+                                                value={value}
+                                                classes={classes.textField}
+                                                options={shiftOptions}
+                                                getOptionLabel={(option) =>
+                                                    option.label
+                                                }
+                                                getOptionSelected={(
+                                                    option,
+                                                    value
+                                                ) =>
+                                                    value === undefined ||
+                                                    value === '' ||
+                                                    option.label === value.label
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        placeholder="Select a Shift"
+                                                        margin="normal"
+                                                        variant="outlined"
+                                                        error={!!errors.shift}
+                                                        helperText={
+                                                            errors.shift &&
+                                                            'shift required'
+                                                        }
+                                                        required
+                                                    />
+                                                )}
                                             />
                                         )}
                                     />

@@ -112,6 +112,20 @@ const headCells = [
         disablePadding: false,
         label: 'First Name',
     },
+    ,
+    {
+        id: 'partner',
+        numeric: false,
+        disablePadding: false,
+        label: 'partner',
+    },
+    ,
+    {
+        id: 'shift',
+        numeric: false,
+        disablePadding: false,
+        label: 'Shift',
+    },
     {
         id: 'phone',
         numeric: false,
@@ -280,6 +294,54 @@ const trainingList = [
     },
 ]
 
+const partnerOptions = [
+    {
+        label: 'Uber',
+        value: 'Uber',
+    },
+    {
+        label: 'Lyft',
+        value: 'Lyft',
+    },
+    {
+        label: 'Waymo',
+        value: 'Waymo',
+    },
+]
+
+const shiftOptions = [
+    {
+        label: 'Weekday 1st Shift',
+        value: 'Weekday 1st Shift',
+        code: 1,
+    },
+    {
+        label: 'Weekday 2nd Shift',
+        value: 'Weekday 2nd Shift',
+        code: 2,
+    },
+    {
+        label: 'Weekday 3rd Shift',
+        value: 'Weekday 3rd Shift',
+        code: 3,
+    },
+    {
+        label: 'Weekend 1st Shift',
+        value: 'Weekend 1st Shift',
+        code: 4,
+    },
+    {
+        label: 'Weekend 2nd Shift',
+        value: 'Weekend 2nd Shift',
+        code: 5,
+    },
+    {
+        label: 'Weekend 3rd Shift',
+        value: 'Weekend 3rd Shift',
+        code: 6,
+    },
+]
+
 export default function EnhancedTable() {
     const [order, setOrder] = React.useState('asc')
     const [orderBy, setOrderBy] = React.useState('calories')
@@ -314,6 +376,8 @@ export default function EnhancedTable() {
         DT: '',
         Training: '',
         hiring: '',
+        partner: '',
+        shift: '',
     })
 
     const handleRequestSort = (event, property) => {
@@ -570,7 +634,7 @@ export default function EnhancedTable() {
                                 color: '#000000',
                             }}
                         >
-                            Cadidates
+                            Candidates
                         </Typography>
                     </Box>
                     <Grid item>
@@ -838,6 +902,96 @@ export default function EnhancedTable() {
                                                     {...params}
                                                     label="Select a Job"
                                                     placeholder="Job"
+                                                    margin="normal"
+                                                    variant="outlined"
+                                                />
+                                            )}
+                                            fullWidth
+                                        />
+                                    </ListItem>
+
+                                    <ListItem
+                                        key={'partner'}
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            paddingTop: 0,
+                                            paddingBottom: 0,
+                                        }}
+                                    >
+                                        <Autocomplete
+                                            onChange={(event, job) => {
+                                                setFilter({
+                                                    ...filter,
+                                                    partner: job,
+                                                })
+                                            }}
+                                            classes={classes.textField}
+                                            disableCloseOnSelect
+                                            options={partnerOptions}
+                                            getOptionLabel={(option) =>
+                                                option.label
+                                            }
+                                            key="autocomplete"
+                                            getOptionSelected={(
+                                                option,
+                                                value
+                                            ) =>
+                                                value === undefined ||
+                                                value === '' ||
+                                                option.label === value.label
+                                            }
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Partner"
+                                                    placeholder="Select a Partner"
+                                                    margin="normal"
+                                                    variant="outlined"
+                                                />
+                                            )}
+                                            fullWidth
+                                        />
+                                    </ListItem>
+
+                                    <ListItem
+                                        key={'filter'}
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            paddingTop: 0,
+                                            paddingBottom: 0,
+                                        }}
+                                    >
+                                        <Autocomplete
+                                            onChange={(event, job) => {
+                                                setFilter({
+                                                    ...filter,
+                                                    shift: job,
+                                                })
+                                            }}
+                                            classes={classes.textField}
+                                            disableCloseOnSelect
+                                            options={shiftOptions}
+                                            getOptionLabel={(option) =>
+                                                option.label
+                                            }
+                                            key="autocomplete"
+                                            getOptionSelected={(
+                                                option,
+                                                value
+                                            ) =>
+                                                value === undefined ||
+                                                value === '' ||
+                                                option.label === value.label
+                                            }
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Shift"
+                                                    placeholder="Select a Shift"
                                                     margin="normal"
                                                     variant="outlined"
                                                 />
@@ -1245,7 +1399,7 @@ export default function EnhancedTable() {
                                                 {row.post_job.job_title}
                                             </TableCell>
                                             <TableCell align="left">
-                                                {row.post_job.city_name}
+                                                {row.city_name}
                                             </TableCell>
                                             <TableCell align="left">
                                                 {row.source}
@@ -1258,6 +1412,12 @@ export default function EnhancedTable() {
                                             </TableCell>
                                             <TableCell align="left">
                                                 {row.first_name}
+                                            </TableCell>
+                                            <TableCell align="left">
+                                                {row.service}
+                                            </TableCell>
+                                            <TableCell align="left">
+                                                {row.shift}
                                             </TableCell>
                                             <TableCell align="left">
                                                 {row.phone_number}
