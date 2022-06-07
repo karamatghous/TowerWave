@@ -591,6 +591,84 @@ function JobsPage() {
                     </Box>
                 </Grid>
             </Grid>
+            {/* <Grid item xs={6} style={{ marginTop: '20px' }}> */}
+            <Grid
+                container
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                style={{ marginTop: '20px' }}
+            >
+                <Box
+                    component={'div'}
+                    style={{
+                        height: 20,
+                        display: 'flex',
+                        margin: '0px 5px',
+                    }}
+                >
+                    <FiberManualRecordIcon
+                        fontSize="small"
+                        style={{
+                            color: '#6495ED',
+                            marginRight: 5,
+                        }}
+                    />
+                    <Typography component={'span'}>Total</Typography>
+                </Box>
+                <Box
+                    component={'div'}
+                    style={{
+                        height: 20,
+                        display: 'flex',
+                        margin: '0px 5px',
+                    }}
+                >
+                    <FiberManualRecordIcon
+                        fontSize="small"
+                        style={{
+                            color: '#696969',
+                            marginRight: 5,
+                        }}
+                    />
+                    <Typography component={'span'}> In-Progress</Typography>
+                </Box>
+                <Box
+                    component={'div'}
+                    style={{
+                        height: 20,
+                        display: 'flex',
+                        margin: '0px 5px',
+                    }}
+                >
+                    <FiberManualRecordIcon
+                        fontSize="small"
+                        style={{
+                            color: '#00FF00',
+                            marginRight: 5,
+                        }}
+                    />
+                    <Typography component={'span'}>Hired</Typography>
+                </Box>
+                <Box
+                    component={'div'}
+                    style={{
+                        height: 20,
+                        display: 'flex',
+                        margin: '0px 5px',
+                    }}
+                >
+                    <FiberManualRecordIcon
+                        fontSize="small"
+                        style={{
+                            color: '#800000',
+                            marginRight: 5,
+                        }}
+                    />
+                    <Typography component={'span'}>Rejected</Typography>
+                </Box>
+            </Grid>
+            {/* </Grid> */}
             <Grid container spacing={3} style={{ marginTop: 50 }}>
                 {jobList.map((job) => (
                     <Grid
