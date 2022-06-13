@@ -24,7 +24,7 @@ export default makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         fontFamily: 'Poppins',
-        marginTop: 13,
+        marginTop: 10,
         background: '#FFFFFF',
         border: '1px solid #ADADAD',
         boxSizing: 'border-box',
@@ -53,7 +53,7 @@ export default makeStyles((theme) => ({
     },
     textFieldContainer: {
         textAlign: 'left',
-        marginTop: 20,
+        marginTop: 10,
     },
     welcomeText: {
         fontFamily: 'Poppins',

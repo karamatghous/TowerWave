@@ -101,7 +101,10 @@ export default function BasicTabs() {
     const [jobList, setJobList] = React.useState([])
     const [password, setPassword] = React.useState('')
     const [newPassword, setNewPassword] = React.useState('')
+    const [newPasswordConfirm, setNewPasswordConfirm] = React.useState('')
     const [name, setName] = React.useState(user.name)
+    const [firstName, setFirstName] = React.useState(user.first_name)
+    const [lastName, setLastName] = React.useState(user.last_name)
     const [roles, setRoles] = React.useState([])
     const [userRoles, setUserRoles] = React.useState([])
     const [settingsInfo, setSettingsInfo] = React.useState([])
@@ -110,7 +113,11 @@ export default function BasicTabs() {
     const [loading, setLoading] = React.useState(false)
     const [email, setEmail] = React.useState('')
     const [newUserpassword, setNewUserPassword] = React.useState('')
+    const [newUserpasswordConfirm, setNewUserPasswordConfirm] =
+        React.useState('')
     const [newUsername, setNewUserName] = React.useState('')
+    const [newUserFirstName, setNewUserFirstName] = React.useState('')
+    const [newUserLastName, setNewUserLastName] = React.useState('')
     const [role, setRole] = React.useState(allRoles[2])
     const [signup, setSignup] = React.useState(false)
     const [error, setError] = React.useState(false)
@@ -380,10 +387,28 @@ export default function BasicTabs() {
         setLoading(true)
         const data = {
             email: user.email,
-            name: name,
+            name: `${firstName} ${lastName}`,
+            first_name: firstName,
+            last_name: lastName,
             password: password,
             new_password: newPassword,
         }
+        if (
+            newPassword != newPasswordConfirm ||
+            firstName == '' ||
+            lastName == '' ||
+            newPassword == '' ||
+            newPasswordConfirm == ''
+        ) {
+            setLoading(false)
+            enqueueSnackbar('please check your password', {
+                variant: 'error',
+                autoHideDuration: 3000,
+                preventDuplicate: true,
+            })
+            return
+        }
+        setLoading(false)
         try {
             axiosClient
                 .put('auth/userPasswordUpdate', data, httpOptions)
@@ -394,7 +419,12 @@ export default function BasicTabs() {
                         getMyAllEmployees()
                         localStorage.setItem(
                             'user',
-                            JSON.stringify({ ...user, name: name })
+                            JSON.stringify({
+                                ...user,
+                                name: `${firstName} ${lastName}`,
+                                first_name: firstName,
+                                last_name: lastName,
+                            })
                         )
                         setLoading(false)
                         enqueueSnackbar('User Profile Update Successfully', {
@@ -486,6 +516,22 @@ export default function BasicTabs() {
 
     const signUpForm = (event) => {
         event.preventDefault()
+        if (
+            newUserpassword != newUserpasswordConfirm ||
+            newUserFirstName == '' ||
+            newUserLastName == '' ||
+            newPassword == '' ||
+            newPasswordConfirm == '' ||
+            email == '' ||
+            !email.includes('@')
+        ) {
+            enqueueSnackbar('please check your password', {
+                variant: 'error',
+                autoHideDuration: 3000,
+                preventDuplicate: true,
+            })
+            return
+        }
         setLoading(true)
         try {
             axiosClient
@@ -493,7 +539,9 @@ export default function BasicTabs() {
                     username: email,
                     password: newUserpassword,
                     email: email,
-                    name: newUsername,
+                    name: `${newUserFirstName} ${newUserLastName}`,
+                    first_name: newUserFirstName,
+                    last_name: newUserLastName,
                     roleId: role.value,
                 })
                 .then((response) => {
@@ -641,15 +689,44 @@ export default function BasicTabs() {
                                             <Typography
                                                 className={classes.labelText}
                                             >
-                                                Enter Your Name
+                                                First Name
                                             </Typography>
                                             <TextField
-                                                value={name}
+                                                value={firstName}
                                                 onChange={(event) =>
-                                                    setName(event.target.value)
+                                                    setFirstName(
+                                                        event.target.value
+                                                    )
                                                 }
                                                 type="name"
-                                                placeholder="Name"
+                                                placeholder="Enter First Name"
+                                                variant="outlined"
+                                                fullWidth
+                                                required
+                                                className={classes.textField}
+                                            />
+                                        </Grid>
+                                        <Grid
+                                            item
+                                            xs={8}
+                                            className={
+                                                classes.textFieldContainer
+                                            }
+                                        >
+                                            <Typography
+                                                className={classes.labelText}
+                                            >
+                                                Last Name
+                                            </Typography>
+                                            <TextField
+                                                value={lastName}
+                                                onChange={(event) =>
+                                                    setLastName(
+                                                        event.target.value
+                                                    )
+                                                }
+                                                type="name"
+                                                placeholder="Enter Last Name"
                                                 variant="outlined"
                                                 fullWidth
                                                 required
@@ -696,7 +773,7 @@ export default function BasicTabs() {
                                                 Enter New Password
                                             </Typography>
                                             <TextField
-                                                placeholder="Password"
+                                                placeholder="New Password"
                                                 variant="outlined"
                                                 fullWidth
                                                 required
@@ -705,6 +782,33 @@ export default function BasicTabs() {
                                                 className={classes.textField}
                                                 onChange={(event) =>
                                                     setNewPassword(
+                                                        event.target.value
+                                                    )
+                                                }
+                                            />
+                                        </Grid>
+                                        <Grid
+                                            item
+                                            xs={8}
+                                            className={
+                                                classes.textFieldContainer
+                                            }
+                                        >
+                                            <Typography
+                                                className={classes.labelText}
+                                            >
+                                                Confirm New Password
+                                            </Typography>
+                                            <TextField
+                                                placeholder="Confirm Password"
+                                                variant="outlined"
+                                                fullWidth
+                                                required
+                                                type="password"
+                                                value={newPasswordConfirm}
+                                                className={classes.textField}
+                                                onChange={(event) =>
+                                                    setNewPasswordConfirm(
                                                         event.target.value
                                                     )
                                                 }
@@ -843,17 +947,44 @@ export default function BasicTabs() {
                                             <Typography
                                                 className={classes.labelText}
                                             >
-                                                Enter Your Name
+                                                First Name
                                             </Typography>
                                             <TextField
-                                                value={newUsername}
+                                                value={newUserFirstName}
                                                 onChange={(event) =>
-                                                    setNewUserName(
+                                                    setNewUserFirstName(
                                                         event.target.value
                                                     )
                                                 }
                                                 type="name"
-                                                placeholder="Name"
+                                                placeholder="Enter First Name"
+                                                variant="outlined"
+                                                fullWidth
+                                                required
+                                                className={classes.textField}
+                                            />
+                                        </Grid>
+                                        <Grid
+                                            item
+                                            xs={12}
+                                            className={
+                                                classes.textFieldContainer
+                                            }
+                                        >
+                                            <Typography
+                                                className={classes.labelText}
+                                            >
+                                                Last Name
+                                            </Typography>
+                                            <TextField
+                                                value={newUserLastName}
+                                                onChange={(event) =>
+                                                    setNewUserLastName(
+                                                        event.target.value
+                                                    )
+                                                }
+                                                type="name"
+                                                placeholder="Enter Last Name"
                                                 variant="outlined"
                                                 fullWidth
                                                 required
@@ -871,7 +1002,7 @@ export default function BasicTabs() {
                                             <Typography
                                                 className={classes.labelText}
                                             >
-                                                Enter Your Email
+                                                Enter Email
                                             </Typography>
                                             <TextField
                                                 value={email}
@@ -896,10 +1027,10 @@ export default function BasicTabs() {
                                             <Typography
                                                 className={classes.labelText}
                                             >
-                                                Enter Your Password
+                                                Password
                                             </Typography>
                                             <TextField
-                                                placeholder="Password"
+                                                placeholder="Enter Password"
                                                 variant="outlined"
                                                 fullWidth
                                                 required
@@ -908,6 +1039,33 @@ export default function BasicTabs() {
                                                 className={classes.textField}
                                                 onChange={(event) =>
                                                     setNewUserPassword(
+                                                        event.target.value
+                                                    )
+                                                }
+                                            />
+                                        </Grid>
+                                        <Grid
+                                            item
+                                            xs={12}
+                                            className={
+                                                classes.textFieldContainer
+                                            }
+                                        >
+                                            <Typography
+                                                className={classes.labelText}
+                                            >
+                                                Confirm Password
+                                            </Typography>
+                                            <TextField
+                                                placeholder="Enter Confirm Password"
+                                                variant="outlined"
+                                                fullWidth
+                                                required
+                                                type="password"
+                                                value={newUserpasswordConfirm}
+                                                className={classes.textField}
+                                                onChange={(event) =>
+                                                    setNewUserPasswordConfirm(
                                                         event.target.value
                                                     )
                                                 }
