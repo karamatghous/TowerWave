@@ -140,7 +140,6 @@ function EditJobForm({ open, handleClose, job }) {
 
     React.useEffect(() => {
         State.getStatesOfCountry('US')
-        console.log(getValues('state'))
     }, [getValues('state')])
 
     React.useEffect(() => {

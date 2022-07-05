@@ -132,8 +132,6 @@ function CadidateForm({ open, handleClose, candidate }) {
         handleClose()
     }
 
-    console.log(DLStatus)
-
     React.useEffect(() => {
         setProfileStatus(
             candidate.profile_photo
@@ -926,7 +924,6 @@ function CadidateForm({ open, handleClose, candidate }) {
                                         >
                                             <Autocomplete
                                                 onChange={(event, city) => {
-                                                    console.log(city)
                                                     setTrainingStatus(city)
                                                     handleProfileTrainingStatus(
                                                         city.label
@@ -985,7 +982,6 @@ function CadidateForm({ open, handleClose, candidate }) {
                                         >
                                             <Autocomplete
                                                 onChange={(event, city) => {
-                                                    console.log(city)
                                                     setHiringStatus(city)
                                                     handleProfileHiringStatus(
                                                         city

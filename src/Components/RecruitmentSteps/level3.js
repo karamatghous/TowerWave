@@ -438,10 +438,6 @@ function Level2({ setIndex, location, client }) {
                                             : `No`}
                                     </Button>
                                 )}
-                                {console.log(
-                                    question[questionIndex],
-                                    questionIndex
-                                )}
                                 <Button
                                     style={{
                                         fontSize: '14px',

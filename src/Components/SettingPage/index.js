@@ -138,7 +138,6 @@ export default function BasicTabs() {
             clientId: client,
             userId: user.id,
         }
-        console.log(httpOptions)
         try {
             axiosClient
                 .post('user/profile/getAllEmployees', data, httpOptions)
@@ -413,7 +412,6 @@ export default function BasicTabs() {
             axiosClient
                 .put('auth/userPasswordUpdate', data, httpOptions)
                 .then((response) => {
-                    console.log(response)
                     if (response.data.status === 200) {
                         const res = response.data.data
                         getMyAllEmployees()

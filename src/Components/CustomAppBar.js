@@ -66,7 +66,6 @@ export default function PrimarySearchAppBar() {
     )
 
     React.useEffect(() => {
-        console.log(JSON.parse(localStorage.getItem('user')))
         setUser(JSON.parse(localStorage.getItem('user')))
     }, [])
 
