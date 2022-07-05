@@ -144,7 +144,10 @@ export default function PrimarySearchAppBar() {
     return (
         <AppBar
             position="sticky"
-            style={{ color: '#ffffff', backgroundColor: '#3f50b5' }}
+            style={{
+                color: '#FFFFFF',
+                backgroundColor: '#081e5c',
+            }}
         >
             <Toolbar>
                 <Grid

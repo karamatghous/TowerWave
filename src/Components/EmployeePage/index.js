@@ -16,7 +16,7 @@ import Loader from '../Loader'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-        backgroundColor: '#3f50b5',
+        backgroundColor: '#081e5c',
         color: theme.palette.common.white,
     },
     [`&.${tableCellClasses.body}`]: {

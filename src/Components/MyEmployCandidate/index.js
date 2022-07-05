@@ -32,7 +32,7 @@ import CadidateView from '../CadidateView'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-        backgroundColor: '#3f50b5',
+        backgroundColor: '#081e5c',
         color: theme.palette.common.white,
     },
     [`&.${tableCellClasses.body}`]: {
@@ -742,7 +742,7 @@ function HomePage() {
                             handleAddNotes(selectedRow)
                         }}
                         style={{
-                            background: '#3f50b5',
+                            background: '#081e5c',
                             color: '#FFFFFF',
                             margin: '10px',
                             textTransform: 'capitalize',
@@ -1300,7 +1300,7 @@ function HomePage() {
                                 setFilterDialog(false)
                             }}
                             style={{
-                                background: '#3f50b5',
+                                background: '#081e5c',
                                 color: '#FFFFFF',
                                 textTransform: 'capitalize',
                             }}

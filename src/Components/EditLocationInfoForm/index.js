@@ -361,8 +361,11 @@ function EditLocationInfoForm({ open, handleClose, row }) {
                                     <Button
                                         type="submit"
                                         variant="contained"
-                                        color="primary"
-                                        style={{ marginLeft: 20 }}
+                                        style={{
+                                            marginLeft: 20,
+                                            backgroundColor: '#081e5c',
+                                            color: 'white',
+                                        }}
                                         onClick={handleSubmit((d) =>
                                             onSubmit(d)
                                         )}

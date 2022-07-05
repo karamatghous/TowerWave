@@ -5,9 +5,12 @@ import CircularProgress from '@mui/material/CircularProgress'
 export default function Loader({ loading }) {
     return (
         <div>
-            <Backdrop style={{ color: '#fff', zIndex: 35001 }} open={loading}>
+            <Backdrop
+                style={{ color: '#FFFFFF', zIndex: 35001 }}
+                open={loading}
+            >
                 <CircularProgress
-                    style={{ color: '#3f50b5' }}
+                    style={{ color: '#081e5c' }}
                     thickness={3}
                     size={50}
                 />

@@ -317,7 +317,7 @@ function Level2({ setIndex, location, client }) {
                     alignItems="center"
                     style={{
                         padding: 40,
-                        border: '2px solid #3f50b5',
+                        border: '2px solid #081e5c',
                         borderRadius: 15,
                         minHeight: 500,
                     }}
@@ -371,7 +371,7 @@ function Level2({ setIndex, location, client }) {
                                                     variant="outlined"
                                                     placeholder="Select a Shift"
                                                     style={{
-                                                        color: 'white',
+                                                        color: '#FFFFFF',
                                                         backgroundColor:
                                                             'white',
                                                         fontFamily: 'Poppins',

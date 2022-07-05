@@ -103,7 +103,7 @@ export default function HomeScreen() {
                                             minWidth: column.minWidth,
                                             fontSize: 20,
                                             backgroundColor: '#ff9800',
-                                            color: '#fff',
+                                            color: '#FFFFFF',
                                             fontWeight: 'bold',
                                         }}
                                     >
@@ -188,7 +188,7 @@ export default function HomeScreen() {
                                             minWidth: column.minWidth,
                                             fontSize: 20,
                                             backgroundColor: '#ff9800',
-                                            color: '#fff',
+                                            color: '#FFFFFF',
                                             fontWeight: 'bold',
                                         }}
                                     >

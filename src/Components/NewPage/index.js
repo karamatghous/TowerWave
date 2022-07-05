@@ -11,7 +11,7 @@ function newPage() {
         >
             <div
                 style={{
-                    backgroundColor: '#FFFFFF',
+                    backgroundcolor: '#FFFFFF',
                     height: 'inherit',
                     border: '1px solid #979797',
                     padding: 30,
@@ -19,7 +19,7 @@ function newPage() {
             >
                 <div
                     style={{
-                        backgroundColor: '#FFFFFF',
+                        backgroundcolor: '#FFFFFF',
                         display: 'flex',
                         margin: '5px',
                         marginBottom: 30,

@@ -140,167 +140,156 @@
 //   );
 // }
 
-import * as React from "react";
+import * as React from 'react'
 // import "./App.css";
 import {
-  Grid,
-  TextField,
-  Button,
-  Card,
-  CardContent,
-  Typography,
-  AppBar,
-  Toolbar,
-} from "@material-ui/core";
+    Grid,
+    TextField,
+    Button,
+    Card,
+    CardContent,
+    Typography,
+    AppBar,
+    Toolbar,
+} from '@material-ui/core'
 
 function CandidateExternalInput() {
-  const displayDesktop = () => {
-    return (
-      <Typography gutterBottom variant="h3" align="center">
-        TowerWav
-      </Typography>
-    );
-  };
-  const currencies = [
-    {
-      value: "LA",
-      label: "LA",
-    },
-    {
-      value: "AL",
-      label: "AL",
-    },
-    {
-      value: "NE",
-      label: "NE",
-    },
-    {
-      value: "AR",
-      label: "AR",
-    },
-  ];
-
-  const [currency, setCurrency] = React.useState("EUR");
-
-  const handleChange = (event) => {
-    setCurrency(event.target.value);
-  };
-  return (
-    <div className="App">
-      <header align="center">
-        <AppBar>{displayDesktop()}</AppBar>
-      </header>
-      <Typography gutterBottom variant="h3" align="center">
-        React-App
-      </Typography>
-      <Grid>
-        <Card
-          style={{
-            maxWidth: 450,
-            padding: "20px 5px",
-            margin: "0 auto",
-            marginTop: 50,
-          }}
-        >
-          <CardContent>
-            <Typography gutterBottom variant="h5">
-              Open Candidates
+    const displayDesktop = () => {
+        return (
+            <Typography gutterBottom variant="h3" align="center">
+                TowerWav
             </Typography>
-            {/* <Typography
-              variant="body2"
-              color="textSecondary"
-              component="p"
-              gutterBottom
-            >
-              Fill up the form and our team will get back to you soon.
-            </Typography> */}
-            <form>
-              <Grid container spacing={1}>
-                <Grid xs={12} item>
-                  <TextField
-                    placeholder="Enter referal name"
-                    label="Referal Name"
-                    variant="outlined"
-                    fullWidth
-                  />
-                </Grid>
-                <Grid xs={12} item>
-                  <TextField
-                    placeholder="Enter first name"
-                    label="First Name"
-                    variant="outlined"
-                    fullWidth
-                    required
-                  />
-                </Grid>
-                <Grid xs={12} item>
-                  <TextField
-                    placeholder="Enter last name"
-                    label="Last Name"
-                    variant="outlined"
-                    fullWidth
-                    required
-                  />
-                </Grid>
-                {/* <Grid item xs={12}>
-                  <TextField
-                    type="email"
-                    placeholder="Enter email"
-                    label="Email"
-                    variant="outlined"
-                    fullWidth
-                    required
-                  />
-                </Grid> */}
-                <Grid item xs={12}>
-                  <TextField
-                    type="number"
-                    placeholder="Enter phone number"
-                    label="Phone"
-                    variant="outlined"
-                    fullWidth
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    id="standard-select-currency-native"
-                    select
-                    label="Location"
-                    value={currency}
-                    onChange={handleChange}
-                    SelectProps={{
-                      native: true,
-                    }}
-                    // helperText="Please select location"
-                    variant="outlined"
-                  >
-                    {currencies.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </TextField>
-                </Grid>
+        )
+    }
+    const currencies = [
+        {
+            value: 'LA',
+            label: 'LA',
+        },
+        {
+            value: 'AL',
+            label: 'AL',
+        },
+        {
+            value: 'NE',
+            label: 'NE',
+        },
+        {
+            value: 'AR',
+            label: 'AR',
+        },
+    ]
 
-                <Grid item xs={12} style={{ marginTop: 30 }}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                  >
-                    Submit
-                  </Button>
-                </Grid>
-              </Grid>
-            </form>
-          </CardContent>
-        </Card>
-      </Grid>
-    </div>
-  );
+    const [currency, setCurrency] = React.useState('EUR')
+
+    const handleChange = (event) => {
+        setCurrency(event.target.value)
+    }
+    return (
+        <div className="App">
+            <header align="center">
+                <AppBar>{displayDesktop()}</AppBar>
+            </header>
+            <Typography gutterBottom variant="h3" align="center">
+                React-App
+            </Typography>
+            <Grid>
+                <Card
+                    style={{
+                        maxWidth: 450,
+                        padding: '20px 5px',
+                        margin: '0 auto',
+                        marginTop: 50,
+                    }}
+                >
+                    <CardContent>
+                        <Typography gutterBottom variant="h5">
+                            Open Candidates
+                        </Typography>
+
+                        <form>
+                            <Grid container spacing={1}>
+                                <Grid xs={12} item>
+                                    <TextField
+                                        placeholder="Enter referal name"
+                                        label="Referal Name"
+                                        variant="outlined"
+                                        fullWidth
+                                    />
+                                </Grid>
+                                <Grid xs={12} item>
+                                    <TextField
+                                        placeholder="Enter first name"
+                                        label="First Name"
+                                        variant="outlined"
+                                        fullWidth
+                                        required
+                                    />
+                                </Grid>
+                                <Grid xs={12} item>
+                                    <TextField
+                                        placeholder="Enter last name"
+                                        label="Last Name"
+                                        variant="outlined"
+                                        fullWidth
+                                        required
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        type="number"
+                                        placeholder="Enter phone number"
+                                        label="Phone"
+                                        variant="outlined"
+                                        fullWidth
+                                        required
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        fullWidth
+                                        id="standard-select-currency-native"
+                                        select
+                                        label="Location"
+                                        value={currency}
+                                        onChange={handleChange}
+                                        SelectProps={{
+                                            native: true,
+                                        }}
+                                        // helperText="Please select location"
+                                        variant="outlined"
+                                    >
+                                        {currencies.map((option) => (
+                                            <option
+                                                key={option.value}
+                                                value={option.value}
+                                            >
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </TextField>
+                                </Grid>
+
+                                <Grid item xs={12} style={{ marginTop: 30 }}>
+                                    <Button
+                                        type="submit"
+                                        variant="contained"
+                                        style={{
+                                            backgroundColor: '#081e5c',
+                                            color: 'white',
+                                        }}
+                                        fullWidth
+                                    >
+                                        Submit
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </form>
+                    </CardContent>
+                </Card>
+            </Grid>
+        </div>
+    )
 }
 
-export default CandidateExternalInput;
+export default CandidateExternalInput

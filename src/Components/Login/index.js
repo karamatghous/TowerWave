@@ -308,7 +308,10 @@ function LoginForm() {
                                     <Button
                                         type="submit"
                                         variant="contained"
-                                        color="primary"
+                                        style={{
+                                            backgroundColor: '#081e5c',
+                                            color: 'white',
+                                        }}
                                         fullWidth
                                         className={classes.button}
                                     >

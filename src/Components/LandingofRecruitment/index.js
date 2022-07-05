@@ -39,7 +39,7 @@ export default function LandingofRecruitment({
 
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
         [`&.${tableCellClasses.head}`]: {
-            backgroundColor: '#3f50b5',
+            backgroundColor: '#081e5c',
             color: theme.palette.common.white,
         },
         [`&.${tableCellClasses.body}`]: {
@@ -152,13 +152,6 @@ export default function LandingofRecruitment({
                 alignItems="center"
             >
                 <Grid margin={10} width={'100%'} textAlign={'center'}>
-                    {/* <Typography
-                        variant="h3"
-                        style={{ color: 'white', fontFamily: 'Poppins' }}
-                    >
-                        HRDSP DRIVERS HIRING AGENCY HUMAN RESOURCES FOR DIRECT
-                        SERVICE PROVIDERS
-                    </Typography> */}
                     <Typography
                         variant="h6"
                         style={{ color: '#000000', fontFamily: 'Poppins' }}
@@ -190,8 +183,8 @@ export default function LandingofRecruitment({
                                         variant="outlined"
                                         placeholder="Select a Client"
                                         style={{
-                                            color: 'white',
-                                            backgroundColor: 'white',
+                                            color: '#FFFFFF',
+                                            backgroundcolor: '#FFFFFF',
                                             fontFamily: 'Poppins',
                                             borderRadius: '9px',
                                         }}

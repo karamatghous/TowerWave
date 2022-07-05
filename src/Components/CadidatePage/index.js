@@ -1286,7 +1286,7 @@ export default function EnhancedTable() {
                                                 setFilterDialog(false)
                                             }}
                                             style={{
-                                                background: '#3f50b5',
+                                                background: '#081e5c',
                                                 color: '#FFFFFF',
                                                 textTransform: 'capitalize',
                                             }}
@@ -1337,7 +1337,7 @@ export default function EnhancedTable() {
                             </Box>
                             <Box
                                 style={{
-                                    backgroundColor: '#3f50b5',
+                                    backgroundColor: '#081e5c',
                                     borderRadius: '9px',
                                     padding: 5,
                                 }}

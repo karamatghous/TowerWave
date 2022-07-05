@@ -24,7 +24,7 @@ export default function Splash() {
         }
     }, [])
     return (
-        <div style={{ background: '#3f50b5', height: '100vh', width: '100%' }}>
+        <div style={{ background: '#081e5c', height: '100vh', width: '100%' }}>
             <Grid
                 container
                 direction="row"
@@ -34,14 +34,20 @@ export default function Splash() {
                 <Grid margin={30} width={'100%'} textAlign={'center'}>
                     <Typography
                         variant="h3"
-                        style={{ color: 'white', fontFamily: 'Poppins' }}
+                        style={{
+                            color: '#FFFFFF',
+                            fontFamily: 'Poppins',
+                        }}
                     >
                         HRDSP DRIVERS HIRING AGENCY HUMAN RESOURCES FOR DIRECT
                         SERVICE PROVIDERS
                     </Typography>
                     <Typography
                         variant="h6"
-                        style={{ color: 'white', fontFamily: 'Poppins' }}
+                        style={{
+                            color: '#FFFFFF',
+                            fontFamily: 'Poppins',
+                        }}
                     >
                         Select a Company Your are Hiring For
                     </Typography>
@@ -76,8 +82,8 @@ export default function Splash() {
                                         variant="outlined"
                                         placeholder="Select a Company"
                                         style={{
-                                            color: 'white',
-                                            backgroundColor: 'white',
+                                            color: '#FFFFFF',
+                                            backgroundcolor: '#FFFFFF',
                                             fontFamily: 'Poppins',
                                             borderRadius: '9px',
                                         }}

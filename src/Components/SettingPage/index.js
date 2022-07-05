@@ -58,7 +58,7 @@ function a11yProps(index) {
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-        backgroundColor: '#3f50b5',
+        backgroundColor: '#081e5c',
         color: theme.palette.common.white,
     },
     [`&.${tableCellClasses.body}`]: {
@@ -818,7 +818,10 @@ export default function BasicTabs() {
                                             <Button
                                                 type="submit"
                                                 variant="contained"
-                                                color="primary"
+                                                style={{
+                                                    backgroundColor: '#081e5c',
+                                                    color: 'white',
+                                                }}
                                                 fullWidth
                                                 className={classes.button}
                                                 onClick={setUserPassword}
@@ -880,7 +883,7 @@ export default function BasicTabs() {
                                         >
                                             <Box
                                                 style={{
-                                                    backgroundColor: '#3f50b5',
+                                                    backgroundColor: '#081e5c',
                                                     borderRadius: '9px',
                                                     padding: 5,
                                                 }}
@@ -1116,7 +1119,10 @@ export default function BasicTabs() {
                                             <Button
                                                 type="submit"
                                                 variant="contained"
-                                                color="primary"
+                                                style={{
+                                                    backgroundColor: '#081e5c',
+                                                    color: 'white',
+                                                }}
                                                 fullWidth
                                                 className={classes.button}
                                             >

@@ -40,9 +40,9 @@ export default makeStyles((theme) => ({
     },
     button: {
         fontFamily: 'Poppins',
-        backgroundColor: '#3f50b5',
+        backgroundColor: '#081e5c',
         marginTop: 20,
-        border: '1px solid #3f50b5',
+        border: '1px solid #081e5c',
         boxSizing: 'border-box',
         borderRadius: '9px',
         height: 50,
@@ -68,7 +68,7 @@ export default makeStyles((theme) => ({
         fontHeight: 400,
         fontSize: '21px',
         lineHeight: '32px',
-        color: '#3f50b5',
+        color: '#081e5c',
     },
     donotHaveAccountText: {
         fontFamily: 'Poppins',
@@ -79,7 +79,7 @@ export default makeStyles((theme) => ({
         fontFamily: 'Poppins',
         fontWeight: 'bold',
         fontSize: '13px',
-        color: '#3f50b5',
+        color: '#081e5c',
         cursor: 'pointer',
     },
     signinText: {

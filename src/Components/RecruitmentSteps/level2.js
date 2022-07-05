@@ -250,7 +250,7 @@ function Level2({ setIndex, client, location }) {
                     alignItems="center"
                     style={{
                         padding: 40,
-                        border: '2px solid #3f50b5',
+                        border: '2px solid #081e5c',
                         borderRadius: 15,
                         minHeight: 500,
                     }}
