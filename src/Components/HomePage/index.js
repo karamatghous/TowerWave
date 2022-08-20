@@ -29,6 +29,38 @@ import Loader from '../Loader'
 import { useNavigate } from 'react-router-dom'
 import { useSnackbar } from 'notistack'
 import CadidateView from '../CadidateView'
+import events from './events'
+
+import Calendar from './calender'
+import format from 'date-fns/format'
+import parse from 'date-fns/parse'
+import startOfWeek from 'date-fns/startOfWeek'
+import getDay from 'date-fns/getDay'
+import enUS from 'date-fns/locale/en-US'
+
+// const locales = {
+//     'en-US': enUS,
+// }
+
+// const localizer = dateFnsLocalizer({
+//     format,
+//     parse,
+//     startOfWeek,
+//     getDay,
+//     locales,
+// })
+
+// const MyCalendar = (props) => (
+//     <div>
+//         <Calendar
+//             localizer={localizer}
+//             events={events}
+//             startAccessor="start"
+//             endAccessor="end"
+//             style={{ height: 500 }}
+//         />
+//     </div>
+// )
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -647,6 +679,9 @@ function HomePage() {
             </Grid>
             <Grid container spacing={3} style={{ marginTop: 10 }}>
                 {CustomizedTables()}
+            </Grid>
+            <Grid container spacing={3} style={{ marginTop: 50 }}>
+                <Calendar />
             </Grid>
             <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
                 <DialogTitle sx={{ padding: 0 }}>Add noted Here</DialogTitle>
