@@ -74,22 +74,21 @@ function CalendarView() {
     }
 
     const handleSelectedDates = (info) => {
-        const now = moment(new Date(info.startStr).toString())
-        const start = now.add(0, 'hours')
-        const end = now.add(24, 'hours')
+        // const now = moment(new Date(info.startStr).toString())
+        // const start = now.add(0, 'hours')
+        // const end = now.add(24, 'hours')
 
         if (info != null) {
-            console.log(info)
-            setSortedEvent(
-                sortedEvents.filter(
-                    (e) => console.log(moment(`${e.start}z`))
-                    // moment(`${e.start}z`)
-                    //     .toLocaleString()
-                    //     .add(0, 'hours') >= start &&
-                    // moment(`${e.start}z`).toLocaleString().add(0, 'hours') <
-                    //     end
-                )
-            )
+            // setSortedEvent(
+            //     sortedEvents.filter(
+            //         (e) => console.log(moment(`${e.start}z`))
+            //         // moment(`${e.start}z`)
+            //         //     .toLocaleString()
+            //         //     .add(0, 'hours') >= start &&
+            //         // moment(`${e.start}z`).toLocaleString().add(0, 'hours') <
+            //         //     end
+            //     )
+            // )
         } else {
             console.log('nothing')
         }
@@ -170,7 +169,7 @@ function CalendarView() {
         setSortedEvent(
             sortBy(events, function (o) {
                 return new moment(o.start)
-            })
+            }).reverse()
         )
     }, [events])
 

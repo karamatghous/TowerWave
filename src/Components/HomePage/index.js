@@ -433,102 +433,115 @@ function HomePage() {
             >
                 <Loader loading={loading} />
                 <Grid item xs={10} md={12}>
-                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                        <TableHead>
-                            <TableRow>
-                                <StyledTableCell>Job</StyledTableCell>
-                                <StyledTableCell>First Name</StyledTableCell>
-                                <StyledTableCell>Last Name</StyledTableCell>
-                                <StyledTableCell>
-                                    Days in Progress
-                                </StyledTableCell>
-                                <StyledTableCell>Profile Photo</StyledTableCell>
-                                <StyledTableCell>
-                                    Driving License
-                                </StyledTableCell>
-                                <StyledTableCell>
-                                    Background Check
-                                </StyledTableCell>
-                                <StyledTableCell>Drug Test</StyledTableCell>
-                                <StyledTableCell>Training</StyledTableCell>
-                                <StyledTableCell>Status</StyledTableCell>
-                                <StyledTableCell>Notes</StyledTableCell>
-                                <StyledTableCell></StyledTableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {jobList.map((row) => (
-                                <StyledTableRow key={row.name}>
-                                    <StyledTableCell component="th" scope="row">
-                                        {row.post_job.job_title}
+                    <TableContainer style={{ maxHeight: 450 }}>
+                        <Table
+                            stickyHeader
+                            sx={{ minWidth: 700 }}
+                            aria-label="customized table"
+                        >
+                            <TableHead>
+                                <TableRow>
+                                    <StyledTableCell>Job</StyledTableCell>
+                                    <StyledTableCell>
+                                        First Name
                                     </StyledTableCell>
-                                    <StyledTableCell
-                                        onClick={() => {
-                                            localStorage.setItem(
-                                                'candidate',
-                                                JSON.stringify(row)
-                                            )
-                                            navigate('/recruitment')
-                                        }}
-                                        style={{ cursor: 'pointer' }}
-                                    >
-                                        {row.first_name}
+                                    <StyledTableCell>Last Name</StyledTableCell>
+                                    <StyledTableCell>
+                                        Days in Progress
                                     </StyledTableCell>
                                     <StyledTableCell>
-                                        {row.last_name}
+                                        Profile Photo
                                     </StyledTableCell>
                                     <StyledTableCell>
-                                        {moment(new Date(row.updatedAt)).format(
-                                            'MMMM DD, YYYY'
-                                        )}
+                                        Driving License
                                     </StyledTableCell>
                                     <StyledTableCell>
-                                        {row.profile_photo
-                                            ? row.profile_photo
-                                            : 'pending'}
+                                        Background Check
                                     </StyledTableCell>
-                                    <StyledTableCell>
-                                        {row.DLN_status
-                                            ? row.DLN_status
-                                            : 'pending'}
-                                    </StyledTableCell>
-                                    <StyledTableCell>
-                                        {row.BGC ? row.BGC : 'pending'}
-                                    </StyledTableCell>
-                                    <StyledTableCell>
-                                        {row.drug_test
-                                            ? row.drug_test
-                                            : 'pending'}
-                                    </StyledTableCell>
-                                    <StyledTableCell>
-                                        {row.training
-                                            ? row.training
-                                            : 'pending'}
-                                    </StyledTableCell>
-                                    <StyledTableCell>
-                                        {row.status}
-                                    </StyledTableCell>
-                                    <StyledTableCell
-                                        onClick={() => {
-                                            handleOpen(row)
-                                        }}
-                                        style={{ cursor: 'pointer' }}
-                                    >
-                                        <span>{row.notes}</span>
-                                    </StyledTableCell>
-                                    <StyledTableCell
-                                        onClick={() => {
-                                            setSelectedRow(row)
-                                            setOpenViewDialog(true)
-                                        }}
-                                        style={{ cursor: 'pointer' }}
-                                    >
-                                        <span>View</span>
-                                    </StyledTableCell>
-                                </StyledTableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                                    <StyledTableCell>Drug Test</StyledTableCell>
+                                    <StyledTableCell>Training</StyledTableCell>
+                                    <StyledTableCell>Status</StyledTableCell>
+                                    <StyledTableCell>Notes</StyledTableCell>
+                                    <StyledTableCell></StyledTableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {jobList.map((row, index) => (
+                                    <StyledTableRow key={row.name + index}>
+                                        <StyledTableCell
+                                            component="th"
+                                            scope="row"
+                                        >
+                                            {row.post_job.job_title}
+                                        </StyledTableCell>
+                                        <StyledTableCell
+                                            onClick={() => {
+                                                localStorage.setItem(
+                                                    'candidate',
+                                                    JSON.stringify(row)
+                                                )
+                                                navigate('/recruitment')
+                                            }}
+                                            style={{ cursor: 'pointer' }}
+                                        >
+                                            {row.first_name}
+                                        </StyledTableCell>
+                                        <StyledTableCell>
+                                            {row.last_name}
+                                        </StyledTableCell>
+                                        <StyledTableCell>
+                                            {moment(
+                                                new Date(row.updatedAt)
+                                            ).format('MMMM DD, YYYY')}
+                                        </StyledTableCell>
+                                        <StyledTableCell>
+                                            {row.profile_photo
+                                                ? row.profile_photo
+                                                : 'pending'}
+                                        </StyledTableCell>
+                                        <StyledTableCell>
+                                            {row.DLN_status
+                                                ? row.DLN_status
+                                                : 'pending'}
+                                        </StyledTableCell>
+                                        <StyledTableCell>
+                                            {row.BGC ? row.BGC : 'pending'}
+                                        </StyledTableCell>
+                                        <StyledTableCell>
+                                            {row.drug_test
+                                                ? row.drug_test
+                                                : 'pending'}
+                                        </StyledTableCell>
+                                        <StyledTableCell>
+                                            {row.training
+                                                ? row.training
+                                                : 'pending'}
+                                        </StyledTableCell>
+                                        <StyledTableCell>
+                                            {row.status}
+                                        </StyledTableCell>
+                                        <StyledTableCell
+                                            onClick={() => {
+                                                handleOpen(row)
+                                            }}
+                                            style={{ cursor: 'pointer' }}
+                                        >
+                                            <span>{row.notes}</span>
+                                        </StyledTableCell>
+                                        <StyledTableCell
+                                            onClick={() => {
+                                                setSelectedRow(row)
+                                                setOpenViewDialog(true)
+                                            }}
+                                            style={{ cursor: 'pointer' }}
+                                        >
+                                            <span>View</span>
+                                        </StyledTableCell>
+                                    </StyledTableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 </Grid>
             </Grid>
         )
